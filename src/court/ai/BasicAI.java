@@ -13,11 +13,7 @@ public class BasicAI {
 
 	public static List<Action> doAI(CourtCharacter character, Court court){
 		List<Action> retval = new ArrayList<Action>();
-		if(Math.random() * 2.0 > 1.0) {
-			retval.add(new Move(Move.LEFT));
-		}else {
-			retval.add(new Greet(character));
-		}
+		retval.add(new Greet(character));
 		
 		return retval;
 	}

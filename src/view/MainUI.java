@@ -2,6 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -39,7 +40,7 @@ import view.model.Coordinate;
 
 public class MainUI {
 
-	public static JFrame GUI = new JFrame();
+	static JFrame GUI = new JFrame();
 	static JPanel displayPanel;
 	static JPanel controlPanel;
 	
@@ -293,20 +294,33 @@ public class MainUI {
 		};
 	}
 	
+	static int timesPaintControlsCalled=0;
+	
 	public static void paintGameControls() {
-		controlPanel = new JPanel();
+		if(timesPaintControlsCalled++ > 0) {
+			updateActionList();
+			return;
+		}	
+
+		controlPanel = new JPanel();	
 		controlPanel.setLayout(new BorderLayout());
 		
-		oldActionList.updatePanel(lastActionLabels());
+		//oldActionPanel.setPreferredSize(new Dimension(GUI.getWidth()/4,30));
+		updateActionList();
 		
 		JPanel gameControls = new JPanel();
 		gameControls.setLayout(new BorderLayout());
 		gameControls.add(new JButton("Do the thing!"));
 		gameControls.add(oldActionPanel, BorderLayout.EAST);
-		
+		//System.out.println(((JLabel)oldActionPanel.getComponent(0)).getText());
 		
 		controlPanel.add(gameControls, BorderLayout.NORTH);
 		controlPanel.add(generateMetaControls(), BorderLayout.SOUTH);
+	}
+	
+	public static void updateActionList() {
+		oldActionList.updatePanel(lastActionLabels());
+		oldActionList.scrollToBottom();
 	}
 	
 	public static List<Component> lastActionLabels() {

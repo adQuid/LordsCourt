@@ -15,8 +15,6 @@ public class VerticalList {
 	VerticalListScrollListener listener = new VerticalListScrollListener(this);
 	private JPanel parentPanel;
 	private int size;
-	//temp
-	boolean first = true;
 	
 	public VerticalList(JPanel parentPanel, List<Component> components, int size) {
 		this.parentPanel = parentPanel;
@@ -48,11 +46,6 @@ public class VerticalList {
 		parentPanel.addMouseWheelListener(listener);
 		parentPanel.repaint();
 		MainUI.GUI.validate();
-		/*if(first) {
-			first = false;
-		}else {
-			MainUI.resizeDisplay();
-		}*/
 	}
 	
 	public void scroll(int scroll) {
@@ -64,5 +57,9 @@ public class VerticalList {
 			position = Math.max(components.size()-1,0);
 		}
 		updatePanel();
+	}
+	
+	public void scrollToBottom() {
+		position = Math.max(0, components.size()-size+1);
 	}
 }

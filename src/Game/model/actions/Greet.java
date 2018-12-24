@@ -17,6 +17,6 @@ public class Greet implements Action{
 	@Override
 	public void doAction(CourtCharacter character, Court court) {
 		
-		court.addActionMessage(character.getCharacterName()+" hails you");
+		court.addActionMessage(character.getCharacterName()+" hails you "+Math.random());
 	}
 }

@@ -137,7 +137,6 @@ public class Court {
 	}
 	
 	public void endRound() {
-		System.out.println("ending round");
 		for(CourtCharacter current: characters) {
 			for(Action curAction: current.getActionsThisTurn()) {
 				curAction.doAction(current, this);
@@ -146,7 +145,6 @@ public class Court {
 		}
 		MainUI.repaintDisplay();
 		MainUI.paintGameControls();
-		MainUI.GUI.validate();
 	}
 	
 	public String saveState() {
