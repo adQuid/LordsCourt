@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import court.model.Court;
+import view.mainUI.MainUI;
 
 public class CourtMapLoadPopup {
 
@@ -33,30 +34,7 @@ public class CourtMapLoadPopup {
 			}			
 		});
 		
-		GUI.addWindowListener(new WindowListener() {
-			@Override
-			public void windowActivated(WindowEvent arg0) {
-			}
-			@Override
-			public void windowClosed(WindowEvent arg0) {
-			}
-			@Override
-			public void windowClosing(WindowEvent arg0) {
-			}
-			@Override
-			public void windowDeactivated(WindowEvent arg0) {
-				GUI.setVisible(false);
-			}
-			@Override
-			public void windowDeiconified(WindowEvent arg0) {
-			}
-			@Override
-			public void windowIconified(WindowEvent arg0) {
-			}
-			@Override
-			public void windowOpened(WindowEvent arg0) {
-			}			
-		});
+		ViewUtilities.setPopupBehavior(GUI);
 		
 		GUI.add(nameField);
 		GUI.add(loadButton);

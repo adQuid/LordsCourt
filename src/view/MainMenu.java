@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import view.mainUI.MainUI;
+
 public class MainMenu {
 
 	public static void main(String[] args) {

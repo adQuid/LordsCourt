@@ -1,5 +1,7 @@
 package Game.model.actions;
 
+import java.util.List;
+
 import Game.model.Action;
 import Game.model.Game;
 import court.model.Court;
@@ -22,6 +24,7 @@ public class Move implements Action{
 	@Override
 	public void doAction(CourtCharacter character, Court court) {
 		Coordinate futurePosition = new Coordinate(character.getX(),character.getY());
+
 		if(direction == LEFT) {
 			futurePosition = new Coordinate(character.getX()-1,character.getY());
 		}
@@ -34,10 +37,13 @@ public class Move implements Action{
 		if(direction == UP) {
 			futurePosition = new Coordinate(character.getX(),character.getY()-1);
 		}
-		
-		if(court.tileAt(futurePosition.x, futurePosition.y) != null) {
-			character.setX(futurePosition.x);
-			character.setY(futurePosition.y);
+
+		List<CourtCharacter> charactersHere = court.getCharactersAt(futurePosition.x, futurePosition.y);
+		if(charactersHere.size() == 0) {
+			if(court.tileAt(futurePosition.x, futurePosition.y) != null) {
+				character.setX(futurePosition.x);
+				character.setY(futurePosition.y);
+			}
 		}
 	}
 }

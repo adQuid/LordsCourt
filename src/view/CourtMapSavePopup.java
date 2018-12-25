@@ -13,6 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import view.mainUI.MainUI;
+
 public class CourtMapSavePopup implements Runnable{
 
 	public static void createSavePopup() {
@@ -27,34 +29,11 @@ public class CourtMapSavePopup implements Runnable{
 		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MainUI.court.saveMap(nameField.getText());
+				MainUI.saveActiveMap(nameField.getText());
 			}			
 		});
 		
-		GUI.addWindowListener(new WindowListener() {
-			@Override
-			public void windowActivated(WindowEvent arg0) {
-			}
-			@Override
-			public void windowClosed(WindowEvent arg0) {
-			}
-			@Override
-			public void windowClosing(WindowEvent arg0) {
-			}
-			@Override
-			public void windowDeactivated(WindowEvent arg0) {
-				GUI.setVisible(false);
-			}
-			@Override
-			public void windowDeiconified(WindowEvent arg0) {
-			}
-			@Override
-			public void windowIconified(WindowEvent arg0) {
-			}
-			@Override
-			public void windowOpened(WindowEvent arg0) {
-			}			
-		});
+		ViewUtilities.setPopupBehavior(GUI);
 		
 		GUI.add(nameField);
 		GUI.add(saveButton);

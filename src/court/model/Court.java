@@ -12,7 +12,8 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import Game.model.Action;
-import view.MainUI;
+import view.mainUI.MainUI;
+import view.mainUI.MainUIMapDisplay;
 
 public class Court {
 
@@ -20,6 +21,7 @@ public class Court {
 	private String mapName = null;
 	private List<Tile> tiles;//this would be faster as a normal array, but a little tougher to code
 	private List<CourtCharacter> characters = new ArrayList<CourtCharacter>();
+	private List<Conversation> conversations = new ArrayList<Conversation>();
 	private List<String> lastActions = new ArrayList<String>();
 	
 	//creates a new empty map for map editing
@@ -40,11 +42,27 @@ public class Court {
 		String[] courtStats = parts[0].split(",");
 		loadMap(Integer.parseInt(courtStats[0]),courtStats[1]);
 		
-		parts[1] = parts[1].substring("[[START CHARACTER]]".length(), parts[1].length()-"[[END CHARACTER]]".length());
-		String[] characters = parts[1].split(Pattern.quote("[[END CHARACTER]][[START CHARACTER]]"));
+		String[] arrays = parts[1].split(Pattern.quote("[[END CHARACTER]][[START CONVO]]"));
+
+		if(arrays.length > 1) {
+			arrays[0] = arrays[0].substring("[[START CHARACTER]]".length(), arrays[0].length());
+		} else {
+			arrays[0] = arrays[0].substring("[[START CHARACTER]]".length(), arrays[0].length()-"[[END CHARACTER]]".length());
+		}
+		String[] characters = arrays[0].split(Pattern.quote("[[END CHARACTER]][[START CHARACTER]]"));
 		for(String current: characters) {
 			this.characters.add(new CourtCharacter(current));
 		}
+		
+		if(arrays.length > 1) {
+			arrays[1] = arrays[1].substring(0, arrays[1].length()-"[[END CONVO]]".length());
+			String[] conversations = arrays[1].split(Pattern.quote("[[END CONVO]][[START CONVO]]"));
+			for(String current: conversations) {
+				this.conversations.add(new Conversation(this,current));
+			}
+		}
+		
+		
 	}
 	
 	private void loadMap(int ID, String fileName) {
@@ -81,6 +99,28 @@ public class Court {
 	
 	public List<CourtCharacter> getCharacters(){
 		return characters;
+	}
+	
+	public List<CourtCharacter> getCharactersAt(int x, int y){
+		List<CourtCharacter> retval = new ArrayList<CourtCharacter>();
+		
+		for(CourtCharacter current: characters) {
+			if(current.getX() == x && current.getY() == y) {
+				retval.add(current);
+			}
+		}
+		
+		return retval;
+	}
+	
+	public CourtCharacter getCharacterById(int ID) {
+		for(CourtCharacter current: characters) {
+			if(current.ID == ID) {
+				return current;
+			}
+		}
+		
+		return null;
 	}
 	
 	public void appendActionsForPlayer(List<Action> actions, CourtCharacter player) {
@@ -128,6 +168,10 @@ public class Court {
 		tiles.remove(tileAt(x,y));
 	}
 	
+	public void addConversation(Conversation toAdd) {
+		conversations.add(toAdd);
+	}
+	
 	public List<String> getActionMessages(){
 		return lastActions;
 	}
@@ -143,7 +187,7 @@ public class Court {
 			}
 			current.setActionsThisTurn(new ArrayList<Action>());
 		}
-		MainUI.repaintDisplay();
+		MainUIMapDisplay.repaintDisplay();
 		MainUI.paintGameControls();
 	}
 	
@@ -154,6 +198,11 @@ public class Court {
 			retval+="[[START CHARACTER]]";
 			retval+=curChar.toSaveState();
 			retval+="[[END CHARACTER]]";
+		}
+		for(Conversation curCon: conversations) {
+			retval+="[[START CONVO]]";
+			retval+=curCon.toSaveState();
+			retval+="[[END CONVO]]";
 		}
 		retval+="[[END COURT]]";
 		return retval;

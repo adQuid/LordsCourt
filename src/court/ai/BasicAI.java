@@ -13,7 +13,7 @@ public class BasicAI {
 
 	public static List<Action> doAI(CourtCharacter character, Court court){
 		List<Action> retval = new ArrayList<Action>();
-		retval.add(new Greet(character));
+		retval.add(new Greet(character,court.getCharacters().get(0)));
 		
 		return retval;
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 
 import Game.model.Action;
 import view.GameEntity;
+import view.mainUI.MainUI;
 
 public class CourtCharacter {
 
@@ -63,6 +64,13 @@ public class CourtCharacter {
 		return characterName;
 	}
 	
+	public String getShortDisplayName() {
+		if(MainUI.playingAs == this) {
+			return "you";
+		}
+		return characterName;
+	}
+		
 	public List<Action> getActionsThisTurn() {
 		return actionsThisTurn;
 	}

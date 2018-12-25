@@ -8,6 +8,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import view.mainUI.MainUI;
+
 public class VerticalList {
 
 	private List<Component> components;
@@ -45,7 +47,7 @@ public class VerticalList {
 		
 		parentPanel.addMouseWheelListener(listener);
 		parentPanel.repaint();
-		MainUI.GUI.validate();
+		MainUI.recheck();
 	}
 	
 	public void scroll(int scroll) {
