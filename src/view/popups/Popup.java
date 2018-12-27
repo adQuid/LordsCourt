@@ -1,13 +1,13 @@
-package view;
+package view.popups;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-public class ViewUtilities {
+public abstract class Popup {
 
-	public static void setPopupBehavior(JFrame GUI) {
+	protected static void setPopupBehavior(JFrame GUI) {
 		GUI.addWindowListener(new WindowListener() {
 			@Override
 			public void windowActivated(WindowEvent arg0) {

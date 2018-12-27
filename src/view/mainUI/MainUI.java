@@ -2,9 +2,6 @@ package view.mainUI;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -15,31 +12,24 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import Game.model.Action;
 import Game.model.Game;
 import Game.model.actions.Move;
 import court.model.CourtCharacter;
 import court.model.Court;
-import court.model.Tile;
 import court.model.TileClass;
 import layout.TableLayout;
-import view.TargetSelectPopup;
+import view.popups.TargetSelectPopup;
 import view.VerticalList;
-import view.model.Coordinate;
 
 public class MainUI {
 
@@ -104,42 +94,7 @@ public class MainUI {
 			  MainUIMapDisplay.resizeDisplay();
 		  }
 		});
-		
-		KeyboardFocusManager.getCurrentKeyboardFocusManager()
-		  .addKeyEventDispatcher(new KeyEventDispatcher() {
-		      @Override
-		      public boolean dispatchKeyEvent(KeyEvent e) {
-		    	  	if(e.getID() != KeyEvent.KEY_PRESSED) {
-		    	  		return false;
-		    	  	}
-		    	  	if(e.getKeyCode() == KeyEvent.VK_UP) {
-		    	  		MainUIMapDisplay.focusY--;
-					}
-					if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-						MainUIMapDisplay.focusY++;
-					}
-					if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-						MainUIMapDisplay.focusX--;
-					}
-					if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-						MainUIMapDisplay.focusX++;
-					}
-					if(e.getKeyChar() == 'd') {
-						court.appendActionForPlayer(new Move(Move.RIGHT),playingAs);
-					}
-					if(e.getKeyChar() == 'a') {
-						court.appendActionForPlayer(new Move(Move.LEFT),playingAs);
-					}
-					if(e.getKeyChar() == 's') {
-						court.appendActionForPlayer(new Move(Move.DOWN),playingAs);
-					}
-					if(e.getKeyChar() == 'w') {
-						court.appendActionForPlayer(new Move(Move.UP),playingAs);
-					}
-		        return false;
-		      }
-		});
-		
+				
 		MainUIMapDisplay.imageDisplay.addMouseListener(clickAction);
 		
 		descriptionPanel.add(descriptionLabel);
@@ -171,12 +126,45 @@ public class MainUI {
 			return;
 		}	
 		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+		  .addKeyEventDispatcher(new KeyEventDispatcher() {
+		      @Override
+		      public boolean dispatchKeyEvent(KeyEvent e) {
+		    	  	if(e.getID() != KeyEvent.KEY_PRESSED) {
+		    	  		return false;
+		    	  	}
+		    	  	if(e.getKeyCode() == KeyEvent.VK_UP) {
+		    	  		MainUIMapDisplay.focusY--;
+					}
+					if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+						MainUIMapDisplay.focusY++;
+					}
+					if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+						MainUIMapDisplay.focusX--;
+					}
+					if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+						MainUIMapDisplay.focusX++;
+					}
+					if(e.getKeyChar() == 'd') {
+						addActionForPlayer(new Move(Move.RIGHT));
+					}
+					if(e.getKeyChar() == 'a') {
+						addActionForPlayer(new Move(Move.LEFT));
+					}
+					if(e.getKeyChar() == 's') {
+						addActionForPlayer(new Move(Move.DOWN));
+					}
+					if(e.getKeyChar() == 'w') {
+						addActionForPlayer(new Move(Move.UP));
+					}
+		        return false;
+		      }
+		});
+		
 		clickAction = new MouseListener() {
-
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
-				TargetSelectPopup.create(court, coord.x, coord.y);
+				TargetSelectPopup.create(court, arg0.getX(), arg0.getY());
 			}
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
@@ -276,6 +264,8 @@ public class MainUI {
 		return metaControls;
 	}
 	
-
+	public static void addActionForPlayer(Action action) {
+		court.appendActionForPlayer(action,playingAs);
+	}
 	
 }

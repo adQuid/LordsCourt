@@ -11,6 +11,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import court.model.CourtCharacter;
+import court.model.Subject;
 import court.ai.BrainThread;
 import court.model.Court;
 import court.model.Tile;
@@ -18,6 +19,7 @@ import court.model.Tile;
 public class Game {
 
 	private List<Court> activeCourts = new ArrayList<Court>();
+	private Setting setting;
 	
 	public Game() {
 		activeCourts.add(new Court(1,"test"));
@@ -32,6 +34,8 @@ public class Game {
 		try {
 			saveState = (new Scanner(saveFile)).nextLine();//this SHOULD all be one line
 
+			
+			
 			saveState = saveState.substring("[[START COURT]]".length(), saveState.length());
 			saveState = saveState.substring(0, saveState.length()-"[[END COURT]]".length());
 
@@ -50,6 +54,10 @@ public class Game {
 	private void startAI() {
 		Thread brainThread = new Thread(new BrainThread(this));
 		brainThread.start();
+	}
+	
+	public Setting getSetting() {
+		return setting;
 	}
 	
 	public List<Court> getActiveCourts(){

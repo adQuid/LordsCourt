@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Game.model.Action;
+import Game.model.actions.Greet;
 import view.GameEntity;
 import view.mainUI.MainUI;
 
@@ -91,6 +92,16 @@ public class CourtCharacter {
 		}
 	}
 
+	public List<Action> getActionsOnThis(Court court, CourtCharacter actor){
+		List<Action> retval = new ArrayList<Action>();
+		
+		if(!court.isTalkingTo(actor, this)) {
+			retval.add(new Greet(actor, this));
+		}
+		
+		return retval;
+	}
+	
 	public GameEntity toEntity() {
 		return new GameEntity(x,y,"assets/"+imageName);
 	}

@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 import court.model.Tile;
 import court.model.TileClass;
-import view.CourtMapSavePopup;
+import view.popups.CourtMapSavePopup;
 import view.model.Coordinate;
 
 public class MapEditorUISetup {

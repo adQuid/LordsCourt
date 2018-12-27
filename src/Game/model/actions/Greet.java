@@ -18,7 +18,11 @@ public class Greet implements Action{
 	@Override
 	public void doAction(CourtCharacter character, Court court) {
 		
-		court.addConversation(new Conversation(initiator,target));
-		court.addActionMessage(initiator.getShortDisplayName()+" hails "+target.getShortDisplayName());
+		if(!court.isTalkingTo(initiator, target)) {
+			court.addConversation(new Conversation(initiator,target));
+			court.addActionMessage(initiator.getShortDisplayName()+" hailed "+target.getShortDisplayName());
+		} else {
+			System.err.println(initiator.getCharacterName()+" tried to greet "+target.getCharacterName()+" even though they were already talking!");
+		}
 	}
 }

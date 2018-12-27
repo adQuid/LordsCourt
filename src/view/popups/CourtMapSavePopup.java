@@ -1,45 +1,49 @@
-package view;
+package view.popups;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import court.model.Court;
 import view.mainUI.MainUI;
 
-public class CourtMapLoadPopup {
+public class CourtMapSavePopup extends Popup implements Runnable{
 
-	public static void createLoadPopup() {
-		JFrame GUI = new JFrame("Load map");
+	public static void createSavePopup() {
+		JFrame GUI = new JFrame("Save map");
 		GUI.setLayout(new GridLayout(3,1));
 		GUI.add(new JLabel("Map Name:"));
 		
 		JTextField nameField = new JTextField();
 		
-		JButton loadButton = new JButton("Load");
+		JButton saveButton = new JButton("Save");
 		
-		loadButton.addActionListener(new ActionListener() {
+		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//ID here is just a filler
-				MainUI.startEditior(new Court(1,nameField.getText()));
+				MainUI.saveActiveMap(nameField.getText());
 			}			
 		});
 		
-		ViewUtilities.setPopupBehavior(GUI);
+		setPopupBehavior(GUI);
 		
 		GUI.add(nameField);
-		GUI.add(loadButton);
+		GUI.add(saveButton);
 		GUI.pack();
 		GUI.setVisible(true);
+	}
+
+	@Override
+	public void run() {
+		createSavePopup();
 	}
 	
 }

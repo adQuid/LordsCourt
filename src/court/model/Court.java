@@ -180,6 +180,24 @@ public class Court {
 		lastActions.add(message);
 	}
 	
+	public boolean isTalkingTo(CourtCharacter char1, CourtCharacter char2) {
+		for(Conversation current: conversations) {
+			if(current.getPeople().contains(char1) &&
+					current.getPeople().contains(char2)) {
+				return true;
+			}
+		}
+		return false;
+	}	
+	
+	public List<Action> getReactions(CourtCharacter character) {
+		List<Action> retval = new ArrayList<Action>();
+		
+		
+		
+		return retval;
+	}
+	
 	public void endRound() {
 		for(CourtCharacter current: characters) {
 			for(Action curAction: current.getActionsThisTurn()) {
