@@ -18,7 +18,7 @@ public class BasicAI {
 		if(character.getX() - court.getCharacters().get(0).getX() < 5) {
 			retval.add(new Greet(character,court.getCharacters().get(0)));
 		} else {
-			retval.add(new Wait());
+			retval.add(new Wait(character));
 		}
 		return retval;
 	}

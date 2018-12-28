@@ -8,7 +8,7 @@ import court.model.Subject;
 
 public class WorldSetupHelpers {
 
-	public Setting getSubjectsForSetting(String setting){
+	public static Setting generateSetting(String setting){
 		List<Subject> subjects = new ArrayList<Subject>();
 		List<Category> categories = new ArrayList<Category>();
 		
@@ -16,6 +16,10 @@ public class WorldSetupHelpers {
 		Subject barley = new Subject("barley");
 		Subject oatmeal = new Subject("oatmeal");
 
+		subjects.add(oats);
+		subjects.add(barley);
+		subjects.add(oatmeal);
+		
 		categories.add(groupSubjects("Grain",oats,barley));
 		
 		relateSubjects(oats,oatmeal);
@@ -23,7 +27,7 @@ public class WorldSetupHelpers {
 		return new Setting(subjects, categories);
 	}
 
-	private Category groupSubjects(String name, Subject...subjects) {
+	private static Category groupSubjects(String name, Subject...subjects) {
 		Category retval = new Category(name);
 		for(Subject current: subjects) {
 			retval.addSubject(current);
@@ -31,7 +35,7 @@ public class WorldSetupHelpers {
 		return retval;
 	}
 	
-	private void relateSubjects(Subject...subjects) {
+	private static void relateSubjects(Subject...subjects) {
 		for(Subject i: subjects) {
 			for(Subject j: subjects) {
 				if(i != j) {

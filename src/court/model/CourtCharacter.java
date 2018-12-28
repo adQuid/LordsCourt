@@ -102,6 +102,14 @@ public class CourtCharacter {
 		return retval;
 	}
 	
+	public List<Subject> getGreetingSubjectsForThis(CourtCharacter greeter){
+		List<Subject> retval = new ArrayList<Subject>();
+		
+		retval.addAll(MainUI.game.getSetting().getConversationSubjects());
+		
+		return retval;
+	}
+	
 	public GameEntity toEntity() {
 		return new GameEntity(x,y,"assets/"+imageName);
 	}

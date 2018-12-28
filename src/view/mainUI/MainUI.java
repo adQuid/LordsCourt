@@ -25,6 +25,7 @@ import Game.model.Action;
 import Game.model.Game;
 import Game.model.actions.Move;
 import court.model.CourtCharacter;
+import court.model.Conversation;
 import court.model.Court;
 import court.model.TileClass;
 import layout.TableLayout;
@@ -40,6 +41,7 @@ public class MainUI {
 	static JPanel controlPanel;
 	
 	static JPanel reactionPanel = new JPanel();
+	static JLabel reactionLabel = new JLabel();
 	static JPanel reactionListPanel = new JPanel();
 	static VerticalList reactionList = new VerticalList(reactionListPanel, getReactions(),4);
 	
@@ -51,16 +53,15 @@ public class MainUI {
 	
 	static Court court;
 	
-	//testing code
-	static Game testGame = null;
+	public static Game game = null;
 	public static CourtCharacter playingAs = null;
 	
 	static TileClass selectedClass = null;
 	
 	//will be replaced
 	public static void startGame() {
-		testGame = new Game("dagame");
-		court = testGame.getActiveCourts().get(0);
+		game = new Game("dagame");
+		court = game.getActiveCourts().get(0);
 		playingAs = court.getCharacters().get(0);
 		paintGameControls();
 		setupWindow();
@@ -146,16 +147,16 @@ public class MainUI {
 						MainUIMapDisplay.focusX++;
 					}
 					if(e.getKeyChar() == 'd') {
-						addActionForPlayer(new Move(Move.RIGHT));
+						addActionForPlayer(new Move(playingAs,Move.RIGHT));
 					}
 					if(e.getKeyChar() == 'a') {
-						addActionForPlayer(new Move(Move.LEFT));
+						addActionForPlayer(new Move(playingAs,Move.LEFT));
 					}
 					if(e.getKeyChar() == 's') {
-						addActionForPlayer(new Move(Move.DOWN));
+						addActionForPlayer(new Move(playingAs,Move.DOWN));
 					}
 					if(e.getKeyChar() == 'w') {
-						addActionForPlayer(new Move(Move.UP));
+						addActionForPlayer(new Move(playingAs,Move.UP));
 					}
 		        return false;
 		      }
@@ -228,11 +229,19 @@ public class MainUI {
 		double[][] size = {{TableLayout.FILL},{0.2,0.8}};
 		
 		reactionPanel.setLayout(new TableLayout(size));
-		reactionPanel.add(new JLabel("The guy did a thing!"),"0,0");
+		
+		reactionPanel.add(reactionLabel,"0,0");	
+				
 		reactionPanel.add(reactionListPanel,"0,1");
 	}
 	
 	public static void updateReactions() {
+		Conversation currentConvo = court.convoForCharacter(playingAs);
+		
+		if(currentConvo != null && currentConvo.getLastAction() != null) {
+			reactionLabel.setText(currentConvo.getLastAction().description());
+		}
+		
 		reactionList.updatePanel(getReactions());
 	}
 	
@@ -254,7 +263,7 @@ public class MainUI {
 		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				testGame.saveState("dagame");
+				game.saveState("dagame");
 			}			
 		});
 		metaControls.add(saveButton);

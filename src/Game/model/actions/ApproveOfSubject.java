@@ -4,19 +4,20 @@ import Game.model.Action;
 import court.model.Court;
 import court.model.CourtCharacter;
 
-public class Wait extends Action{
+public class ApproveOfSubject extends Action{
 
-	public Wait(CourtCharacter character) {
+	public ApproveOfSubject(CourtCharacter character) {
 		super(character);
 	}
 
 	@Override
 	public void doAction(Court game) {
-		//Do nothing
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public String description() {
-		return instigator+" did nothing";
+		return "";
 	}
 }

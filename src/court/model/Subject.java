@@ -12,6 +12,10 @@ public class Subject {
 		this.name = name;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public List<Subject> getRelatedSubjects(){
 		return relatedSubjects;
 	}

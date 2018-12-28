@@ -29,7 +29,7 @@ public class MainMenu {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				GUI.setVisible(false);
-				CourtMapLoadPopup.createLoadPopup();
+				CourtMapLoadPopup.createLoadPopup(400,400);
 			}			
 		});
 		

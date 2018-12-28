@@ -17,8 +17,8 @@ import view.mainUI.MainUI;
 
 public class CourtMapLoadPopup extends Popup{
 
-	public static void createLoadPopup() {
-		JFrame GUI = new JFrame("Load map");
+	public static void createLoadPopup(int x, int y) {
+		JFrame GUI = setupGUI("Load map",x,y);
 		GUI.setLayout(new GridLayout(3,1));
 		GUI.add(new JLabel("Map Name:"));
 		
@@ -33,9 +33,7 @@ public class CourtMapLoadPopup extends Popup{
 				MainUI.startEditior(new Court(1,nameField.getText()));
 			}			
 		});
-		
-		setPopupBehavior(GUI);
-		
+				
 		GUI.add(nameField);
 		GUI.add(loadButton);
 		GUI.pack();

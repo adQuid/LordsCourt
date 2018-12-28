@@ -22,6 +22,7 @@ public class Game {
 	private Setting setting;
 	
 	public Game() {
+		setting = WorldSetupHelpers.generateSetting("this don't matter yet");
 		activeCourts.add(new Court(1,"test"));
 		activeCourts.get(0).getCharacters().add(new CourtCharacter(1,activeCourts.get(0).getID(),5,5,"sir Hastings","Reg.png",1));
 		startAI();
@@ -34,7 +35,7 @@ public class Game {
 		try {
 			saveState = (new Scanner(saveFile)).nextLine();//this SHOULD all be one line
 
-			
+			setting = WorldSetupHelpers.generateSetting("this don't matter yet");
 			
 			saveState = saveState.substring("[[START COURT]]".length(), saveState.length());
 			saveState = saveState.substring(0, saveState.length()-"[[END COURT]]".length());

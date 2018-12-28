@@ -18,7 +18,7 @@ public class TargetSelectPopup extends Popup{
 
 	public static void create(Court court, int x, int y) {
 		Coordinate coord = MainUIMapDisplay.pixelToMapCoord(x,y);
-		JFrame GUI = new JFrame("Select Target");
+		JFrame GUI = setupGUI("Select Target",x,y);
 		
 		List<CourtCharacter> charactersHere = court.getCharactersAt(coord.x, coord.y);
 		GUI.setLayout(new GridLayout(charactersHere.size(),1));
@@ -38,8 +38,6 @@ public class TargetSelectPopup extends Popup{
 				GUI.add(selectButton);
 			}
 
-			setPopupBehavior(GUI);
-			GUI.setLocation(x, y);
 			GUI.pack();
 			GUI.setVisible(true);
 		}

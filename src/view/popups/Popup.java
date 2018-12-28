@@ -7,7 +7,8 @@ import javax.swing.JFrame;
 
 public abstract class Popup {
 
-	protected static void setPopupBehavior(JFrame GUI) {
+	protected static JFrame setupGUI(String name, int x, int y) {
+		JFrame GUI = new JFrame(name);
 		GUI.addWindowListener(new WindowListener() {
 			@Override
 			public void windowActivated(WindowEvent arg0) {
@@ -32,6 +33,9 @@ public abstract class Popup {
 			public void windowOpened(WindowEvent arg0) {
 			}			
 		});
+		
+		GUI.setLocation(x, y);
+		return GUI;
 	}
 	
 }

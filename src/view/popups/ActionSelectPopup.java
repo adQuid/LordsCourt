@@ -17,9 +17,8 @@ import view.mainUI.MainUI;
 public class ActionSelectPopup extends Popup{
 
 	public static void create(Court court, CourtCharacter target, int x, int y) {
-		JFrame GUI = new JFrame("Select Action");
 		
-		setPopupBehavior(GUI);
+		JFrame GUI = setupGUI("Select Action",x,y);
 		
 		List<Action> actions = target.getActionsOnThis(court, MainUI.playingAs);
 		
@@ -32,8 +31,7 @@ public class ActionSelectPopup extends Popup{
 			doActionButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					MainUI.addActionForPlayer(current);
-					GUI.setVisible(false);
+					GreetSubjectSelectPopup.create(target, x, y);
 				}				
 			});			
 			GUI.add(doActionButton);
@@ -44,7 +42,6 @@ public class ActionSelectPopup extends Popup{
 		}
 		
 		GUI.pack();
-		GUI.setLocation(x, y);
 		GUI.setVisible(true);
 	}
 	

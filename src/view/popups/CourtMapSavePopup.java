@@ -17,8 +17,8 @@ import view.mainUI.MainUI;
 
 public class CourtMapSavePopup extends Popup implements Runnable{
 
-	public static void createSavePopup() {
-		JFrame GUI = new JFrame("Save map");
+	public static void createSavePopup(int x, int y) {
+		JFrame GUI = setupGUI("map name",x,y);
 		GUI.setLayout(new GridLayout(3,1));
 		GUI.add(new JLabel("Map Name:"));
 		
@@ -32,9 +32,7 @@ public class CourtMapSavePopup extends Popup implements Runnable{
 				MainUI.saveActiveMap(nameField.getText());
 			}			
 		});
-		
-		setPopupBehavior(GUI);
-		
+				
 		GUI.add(nameField);
 		GUI.add(saveButton);
 		GUI.pack();
@@ -43,7 +41,7 @@ public class CourtMapSavePopup extends Popup implements Runnable{
 
 	@Override
 	public void run() {
-		createSavePopup();
+		createSavePopup(400,400);
 	}
 	
 }

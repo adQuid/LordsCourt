@@ -168,7 +168,19 @@ public class Court {
 		tiles.remove(tileAt(x,y));
 	}
 	
+	public Conversation convoForCharacter(CourtCharacter character) {
+		for(Conversation current: conversations) {
+			if(current.getPeople().contains(character)) {
+				return current;
+			}
+		}
+		return null;
+	}
+	
 	public void addConversation(Conversation toAdd) {
+		
+		//behavior to remove characters from other conversations?
+		
 		conversations.add(toAdd);
 	}
 	
@@ -201,12 +213,13 @@ public class Court {
 	public void endRound() {
 		for(CourtCharacter current: characters) {
 			for(Action curAction: current.getActionsThisTurn()) {
-				curAction.doAction(current, this);
+				curAction.doAction(this);
 			}
 			current.setActionsThisTurn(new ArrayList<Action>());
 		}
 		MainUIMapDisplay.repaintDisplay();
 		MainUI.paintGameControls();
+		MainUI.updateReactions();
 	}
 	
 	public String saveState() {
