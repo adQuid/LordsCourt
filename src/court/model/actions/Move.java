@@ -69,7 +69,10 @@ public class Move extends Action{
 	public String shortDescription() {
 		return "Move";
 	}
-
+	@Override
+	public String tooltip() {
+		return "Does stuff";
+	}
 	@Override
 	public String toSaveState() {
 		Gson gson = new Gson();

@@ -93,11 +93,13 @@ public class MainUIMapDisplay {
 	}
 	
 	private static int getMapWidth() {
-		return Math.max(MainUI.GUI.getWidth(),400);
+		int retval = Math.max(MainUI.GUI.getWidth(),400);
+		return retval - (retval%MainUI.visionDistance);
 	}
 	
 	private static int getMapHeight() {
-		return Math.max((int)(MainUI.GUI.getHeight()*0.75),300);
+		int retval = Math.max((int)(MainUI.GUI.getHeight()*0.75),300);
+		return retval - (retval%MainUI.visionDistance);
 	}
 	
 	private static Coordinate mapToPixelCoord(int x, int y) {
@@ -130,6 +132,7 @@ public class MainUIMapDisplay {
 	        AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
 	        g.drawRenderedImage(sbi, at);
 	    }
+
 	    return dbi;
 	}
 	

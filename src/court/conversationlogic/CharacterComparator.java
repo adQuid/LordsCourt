@@ -15,6 +15,6 @@ public class CharacterComparator implements Comparator<CourtCharacter>{
 	
 	@Override
 	public int compare(CourtCharacter character1, CourtCharacter character2) {
-		return 0;
+		return character2.getConfidence() - character1.getConfidence();
 	}	
 }

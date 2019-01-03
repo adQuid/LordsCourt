@@ -39,6 +39,10 @@ public class MainUI {
 	static JPanel descriptionPanel = new JPanel();
 	static JLabel descriptionLabel = new JLabel("This is a window"); 
 	
+	static JPanel selfDetailsPanel = new JPanel();
+	static JLabel attentionLabel = new JLabel("Attention:");
+	static JLabel confidenceLabel = new JLabel("Confidence:");
+	
 	static JPanel controlPanel;
 	
 	static JPanel reactionPanel = new JPanel();
@@ -81,7 +85,7 @@ public class MainUI {
 	public static void setupWindow() {
 		setupPanel();
 		GUI.pack();
-		GUI.setSize(1200, 800);
+		GUI.setSize(1300, 900);
 		GUI.setVisible(true);
 	}
 	
@@ -99,7 +103,14 @@ public class MainUI {
 				
 		MainUIMapDisplay.imageDisplay.addMouseListener(clickAction);
 		
-		descriptionPanel.add(descriptionLabel);
+		selfDetailsPanel.setLayout(new GridLayout(2,1));
+		selfDetailsPanel.add(attentionLabel);
+		selfDetailsPanel.add(confidenceLabel);
+		
+		double[][] size = {{0.25,0.75},{TableLayout.FILL}};
+		descriptionPanel.setLayout(new TableLayout(size));
+		descriptionPanel.add(selfDetailsPanel,"0,0");
+		descriptionPanel.add(descriptionLabel,"1,0");
 		
 		GUI.add(MainUIMapDisplay.displayPanel, BorderLayout.NORTH);
 		GUI.add(descriptionPanel, BorderLayout.CENTER);
@@ -114,6 +125,11 @@ public class MainUI {
 	
 	public static void saveActiveMap(String name) {
 		court.saveMap(name);
+	}
+	
+	public static void updateSelfStats(int attention, int confidence) {
+		attentionLabel.setText("Attention: "+attention);
+		confidenceLabel.setText("Confidence: "+confidence);
 	}
 	
 	public static void changeDescription(String text) {
@@ -259,11 +275,29 @@ public class MainUI {
 
 		for(Action current: reactions) {
 			JButton toAdd = new JButton(current.shortDescription());
-			toAdd.addActionListener(new ActionListener() {
+			toAdd.addMouseListener(new MouseListener() {
 
 				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					court.appendActionForPlayer(current,playingAs);
+				public void mouseClicked(MouseEvent arg0) {
+					court.appendActionForPlayer(current,playingAs);					
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent arg0) {
+					changeDescription(current.tooltip());
+				}
+
+				@Override
+				public void mouseExited(MouseEvent arg0) {
+					changeDescription("");
+				}
+
+				@Override
+				public void mousePressed(MouseEvent arg0) {
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent arg0) {
 				}				
 			});
 			retval.add(toAdd);

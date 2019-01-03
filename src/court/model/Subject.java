@@ -28,4 +28,15 @@ public class Subject {
 		return name;
 	}
 	
+	public boolean equals(Object other) {
+		if(other == null) {
+			return false;
+		}
+		if(other instanceof Subject) {
+			return name.equals(((Subject) other).name);
+		}
+		
+		return false;
+	}
+	
 }

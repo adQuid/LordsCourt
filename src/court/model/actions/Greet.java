@@ -57,7 +57,10 @@ public class Greet extends Action{
 	public String shortDescription() {
 		return "Greet "+target.getCharacterName();
 	}
-	
+	@Override
+	public String tooltip() {
+		return "Does stuff";
+	}
 	public String description() {
 		String retval = instigator.getShortDisplayName()+" greeted "+target.getShortDisplayName();
 		if(subject != null) {

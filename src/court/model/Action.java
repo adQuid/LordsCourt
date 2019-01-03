@@ -30,6 +30,8 @@ public abstract class Action {
 	
 	//used when shown as a menu option
 	public abstract String shortDescription();
+	//used when hovering over the action
+	public abstract String tooltip();
 	//used in logs after the action was taken
 	public abstract String description();
 	

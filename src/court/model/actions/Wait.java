@@ -32,7 +32,10 @@ public class Wait extends Action{
 	public String description() {
 		return instigator+" waited for somebody else to do something";
 	}
-	
+	@Override
+	public String tooltip() {
+		return "Allows other characters to act. It can be more polite to not just ramble on all day.";
+	}
 	@Override
 	public boolean isConversationAction() {
 		return false;

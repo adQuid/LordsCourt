@@ -11,10 +11,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import javax.swing.JPanel;
+
 import Game.model.Setting;
 import court.model.actions.ApproveOfSubject;
 import court.model.actions.ChangeSubject;
 import court.model.actions.DisapproveOfSubject;
+import court.model.actions.Greet;
 import court.model.actions.Wait;
 import view.mainUI.MainUI;
 import view.mainUI.MainUIMapDisplay;
@@ -98,6 +101,10 @@ public class Court {
 	
 	public int getID() {
 		return ID;
+	}
+	
+	public int getRound() {
+		return round;
 	}
 	
 	public String getMapName() {
@@ -241,20 +248,37 @@ public class Court {
 	}
 	
 	public void endRound() {
-		for(CourtCharacter current: characters) {
-			for(Action curAction: current.getActionsThisTurn()) {
-				curAction.doAction(this);
+		for(Conversation current: conversations) {
+			for(CourtCharacter character: current.getPeople()) {
+				for(Action curAction: character.getActionsThisTurn()) {
+					if(curAction.isConversationAction()) {
+						curAction.doAction(this);
+					}
+				}
 			}
-			current.setActionsThisTurn(new ArrayList<Action>());
 		}
 		for(Conversation current: conversations) {
 			current.endRound();
 		}
+		
+		for(CourtCharacter current: characters) {
+			for(Action curAction: current.getActionsThisTurn()) {
+				if(!curAction.isConversationAction() ||
+						curAction instanceof Greet) {
+					curAction.doAction(this);
+				}
+			}
+			current.setActionsThisTurn(new ArrayList<Action>());
+			current.endTurn();
+		}
 		lastActions.add("ROUND "+round++);
+
+		//This needs to move, I'm just not sure where
 		MainUI.updateActionList();
 		MainUIMapDisplay.repaintDisplay();
 		MainUI.paintGameControls();
 		MainUI.updateReactions();
+		MainUI.updateSelfStats(MainUI.playingAs.getAttention(), MainUI.playingAs.getConfidence());
 	}
 	
 	public String saveState() {

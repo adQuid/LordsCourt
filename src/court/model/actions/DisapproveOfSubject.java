@@ -30,6 +30,9 @@ public class DisapproveOfSubject extends Action{
 		Conversation convo = game.convoForCharacter(instigator);
 		
 		if(convo.wasActionTakenThisTurn()) {
+			System.out.println(instigator.getCharacterName()+" was cut off at round "+game.getRound());
+			convo.addAwkwardness(2);
+			instigator.addConfidence(-1);
 			return;//somebody cut you off
 		}
 		
@@ -45,7 +48,10 @@ public class DisapproveOfSubject extends Action{
 	public String shortDescription() {
 		return "Disapprove of topic";
 	}
-	
+	@Override
+	public String tooltip() {
+		return "Does stuff";
+	}
 	@Override
 	public String description() {
 		return instigator.getCharacterName()+" expressed disapproval of "+subject.getName();

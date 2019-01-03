@@ -30,8 +30,16 @@ public class ApproveOfSubject extends Action{
 		Conversation convo = game.convoForCharacter(instigator);
 		
 		if(convo.wasActionTakenThisTurn()) {
-			System.out.println(instigator.getCharacterName()+" was cut off");
+			System.out.println(instigator.getCharacterName()+" was cut off at round "+game.getRound());
+			convo.addAwkwardness(2);
+			instigator.addConfidence(-1);
 			return;//somebody cut you off
+		}
+		
+		instigator.addAttention(4);
+		if(convo.getLastAction() instanceof ApproveOfSubject
+				&& ((ApproveOfSubject)convo.getLastAction()).subject.equals(subject)) {
+			convo.getLastAction().getInstigator().addConfidence(1);
 		}
 		
 		convo.setSubject(subject);
@@ -46,7 +54,10 @@ public class ApproveOfSubject extends Action{
 	public String shortDescription() {
 		return "Approve of topic";
 	}
-	
+	@Override
+	public String tooltip() {
+		return "Does stuff";
+	}
 	@Override
 	public String description() {
 		return instigator.getCharacterName()+" expressed approval of "+subject.getName();

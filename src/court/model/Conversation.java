@@ -1,6 +1,8 @@
 package court.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 
+import court.conversationlogic.CharacterComparator;
 import court.model.actions.ActionFactory;
 
 public class Conversation {
@@ -17,6 +20,7 @@ public class Conversation {
 	private Subject subject = null;
 	private Action lastAction;
 	private int lastActionAge = 999; 
+	private int awkwardness = 0;
 	
 	public Conversation(Action lastAction, CourtCharacter...characters) {
 		this.lastAction = lastAction;
@@ -37,6 +41,7 @@ public class Conversation {
 
 		lastAction = ActionFactory.fromSaveState(court, gson.fromJson(jsonObject.get("action").toString(),Map.class));
 		lastActionAge = ((Double)jsonObject.get("actionAge")).intValue();
+		awkwardness = ((Double)jsonObject.get("awk")).intValue();
 		
 		if(jsonObject.get("subject") != null) {
 			subject = court.getSetting().getSubjectByName(jsonObject.get("subject").toString());
@@ -80,8 +85,29 @@ public class Conversation {
 		return lastActionAge == 0;
 	}
 
+	public int getAwkwardness() {
+		return awkwardness;
+	}
+	
+	public void addAwkwardness(int change) {
+		awkwardness+=change;
+	}
+	
 	public void endRound() {
 		lastActionAge++;
+		awkwardness += lastActionAge;
+		trimDistantPlayers();
+		Collections.sort(people, new CharacterComparator(this));
+	}
+	
+	private void trimDistantPlayers() {
+		List<CourtCharacter> newPeople = new ArrayList<CourtCharacter>();
+		for(CourtCharacter current: people) {
+			if(current.distanceTo(lastAction.getInstigator()) <= 6) {
+				newPeople.add(current);
+			}
+		}
+		people = newPeople;
 	}
 	
 	public String toSaveState() {
@@ -90,6 +116,7 @@ public class Conversation {
 
 		map.put("action", lastAction.toSaveState());
 		map.put("actionAge", lastActionAge);
+		map.put("awk", awkwardness);
 		if(subject != null) {
 			map.put("subject", subject.getName());
 		}

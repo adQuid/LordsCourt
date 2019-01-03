@@ -40,8 +40,7 @@ public class ChangeSubject extends Action{
 
 	@Override
 	public boolean isConversationAction() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public static String saveCode() {
@@ -51,7 +50,10 @@ public class ChangeSubject extends Action{
 	public String shortDescription() {
 		return "Change topic to "+newSubject.getName();
 	}
-
+	@Override
+	public String tooltip() {
+		return "Does stuff";
+	}
 	@Override
 	public String description() {
 		return instigator.getCharacterName()+" brought up the topic of "+newSubject.getName();
