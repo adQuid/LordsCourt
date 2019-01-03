@@ -1,1 +1,1 @@
-[[START COURT]]1,test[[STRTARR]][[START CHARACTER]]1,1,5,5,sir Hastings,Reg.png,1[[END CHARACTER]][[START CHARACTER]]2,1,15,5,Noble,Nobleman.png,0[[END CHARACTER]][[END COURT]]
+[[START COURT]]1,test[[STRTARR]][[START CHARACTER]]1,1,11,5,sir Hastings,Reg.png,1[[END CHARACTER]][[START CHARACTER]]2,1,15,5,Aaron,Nobleman.png,0[[END CHARACTER]][[START CONVO]]{"action":"{\"type\":\"greet\",\"instigator\":2,\"target\":1}","actionAge":0,"people":[2,1]}[[END CONVO]][[END COURT]]

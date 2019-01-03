@@ -24,4 +24,8 @@ public class Subject {
 		relatedSubjects.add(toAdd);
 	}
 	
+	public String toSaveState() {
+		return name;
+	}
+	
 }

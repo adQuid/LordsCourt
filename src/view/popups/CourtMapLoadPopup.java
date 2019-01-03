@@ -30,7 +30,8 @@ public class CourtMapLoadPopup extends Popup{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				//ID here is just a filler
-				MainUI.startEditior(new Court(1,nameField.getText()));
+				//null setting is very dangerous
+				MainUI.startEditior(new Court(1,null,nameField.getText()));
 			}			
 		});
 				

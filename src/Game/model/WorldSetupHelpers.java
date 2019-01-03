@@ -1,7 +1,9 @@
 package Game.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import court.model.Category;
 import court.model.Subject;
@@ -9,16 +11,16 @@ import court.model.Subject;
 public class WorldSetupHelpers {
 
 	public static Setting generateSetting(String setting){
-		List<Subject> subjects = new ArrayList<Subject>();
+		Map<String,Subject> subjects = new HashMap<String,Subject>();
 		List<Category> categories = new ArrayList<Category>();
 		
 		Subject oats = new Subject("oats");
 		Subject barley = new Subject("barley");
 		Subject oatmeal = new Subject("oatmeal");
 
-		subjects.add(oats);
-		subjects.add(barley);
-		subjects.add(oatmeal);
+		subjects.put(oats.getName(),oats);
+		subjects.put(barley.getName(),barley);
+		subjects.put(oatmeal.getName(),oatmeal);
 		
 		categories.add(groupSubjects("Grain",oats,barley));
 		

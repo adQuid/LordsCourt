@@ -8,9 +8,9 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import Game.model.actions.Greet;
 import court.model.CourtCharacter;
 import court.model.Subject;
+import court.model.actions.Greet;
 import view.mainUI.MainUI;
 
 public class GreetSubjectSelectPopup extends Popup{

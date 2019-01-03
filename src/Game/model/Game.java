@@ -23,8 +23,9 @@ public class Game {
 	
 	public Game() {
 		setting = WorldSetupHelpers.generateSetting("this don't matter yet");
-		activeCourts.add(new Court(1,"test"));
+		activeCourts.add(new Court(1,setting,"test"));
 		activeCourts.get(0).getCharacters().add(new CourtCharacter(1,activeCourts.get(0).getID(),5,5,"sir Hastings","Reg.png",1));
+		activeCourts.get(0).getCharacters().add(new CourtCharacter(2,activeCourts.get(0).getID(),15,5,"Aaron","Nobleman.png",0));
 		startAI();
 	}	
 	
@@ -43,7 +44,7 @@ public class Game {
 			String[] courts = saveState.split(Pattern.quote("[[END COURT]][[START COURT]]"));
 
 			for(String current: courts) {
-				activeCourts.add(new Court(current));
+				activeCourts.add(new Court(current,setting));
 			}
 			startAI();
 		} catch (FileNotFoundException e) {

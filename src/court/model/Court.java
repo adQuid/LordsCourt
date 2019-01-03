@@ -11,18 +11,24 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import Game.model.Action;
+import Game.model.Setting;
+import court.model.actions.ApproveOfSubject;
+import court.model.actions.ChangeSubject;
+import court.model.actions.DisapproveOfSubject;
+import court.model.actions.Wait;
 import view.mainUI.MainUI;
 import view.mainUI.MainUIMapDisplay;
 
 public class Court {
 
 	private int ID;
+	private Setting setting;
 	private String mapName = null;
 	private List<Tile> tiles;//this would be faster as a normal array, but a little tougher to code
 	private List<CourtCharacter> characters = new ArrayList<CourtCharacter>();
 	private List<Conversation> conversations = new ArrayList<Conversation>();
 	private List<String> lastActions = new ArrayList<String>();
+	private int round = 0;
 	
 	//creates a new empty map for map editing
 	public Court(int ID) {
@@ -31,16 +37,16 @@ public class Court {
 		characters = new ArrayList<CourtCharacter>();
 	}
 	
-	public Court(int ID, String fileName) {
-		loadMap(ID,fileName);
+	public Court(int ID, Setting setting, String fileName) {
+		loadMap(ID,setting,fileName);
 	}
 	
-	public Court(String saveState) {
+	public Court(String saveState, Setting setting) {
 		
 		String[] parts = saveState.split(Pattern.quote("[[STRTARR]]"));
 		
 		String[] courtStats = parts[0].split(",");
-		loadMap(Integer.parseInt(courtStats[0]),courtStats[1]);
+		loadMap(Integer.parseInt(courtStats[0]),setting,courtStats[1]);
 		
 		String[] arrays = parts[1].split(Pattern.quote("[[END CHARACTER]][[START CONVO]]"));
 
@@ -65,8 +71,9 @@ public class Court {
 		
 	}
 	
-	private void loadMap(int ID, String fileName) {
+	private void loadMap(int ID, Setting setting, String fileName) {
 		this.ID = ID;
+		this.setting = setting;
 		tiles = new ArrayList<Tile>();
 		characters = new ArrayList<CourtCharacter>();
 		
@@ -132,10 +139,9 @@ public class Court {
 	}
 	
 	public void appendActionForPlayer(Action action, CourtCharacter player) {
-		player.addActionsThisTurn(action);
-		if(allPlayersHaveAction()) {
-			endRound();
-		}
+		List<Action> list = new ArrayList<Action>();
+		list.add(action);
+		appendActionsForPlayer(list,player);
 	}
 	
 	public boolean allPlayersHaveAction() {
@@ -145,6 +151,10 @@ public class Court {
 			}
 		}
 		return true;
+	}
+	
+	public Setting getSetting() {
+		return setting;
 	}
 	
 	public List<Tile> getTiles(){
@@ -202,10 +212,30 @@ public class Court {
 		return false;
 	}	
 	
+	//might want to move this into the actions somehow...
 	public List<Action> getReactions(CourtCharacter character) {
 		List<Action> retval = new ArrayList<Action>();
 		
+		Conversation convo = convoForCharacter(character);
 		
+		if(convo != null) {
+			if(convo.getLastAction().getInstigator() == character) {
+				retval.add(new Wait(character));
+			}
+			if(convo.getSubject() != null) {
+				retval.add(new ApproveOfSubject(character,convo.getSubject()));
+				retval.add(new DisapproveOfSubject(character,convo.getSubject()));
+				for(Subject subject: setting.getRelatedSubjects(convo.getSubject())) {
+					if(subject != convo.getSubject()) {
+						retval.add(new ChangeSubject(character,subject));
+					}
+				}
+			} else {
+				for(Subject subject: setting.getConversationSubjects().values()) {
+					retval.add(new ChangeSubject(character,subject));
+				}
+			}
+		}
 		
 		return retval;
 	}
@@ -217,6 +247,11 @@ public class Court {
 			}
 			current.setActionsThisTurn(new ArrayList<Action>());
 		}
+		for(Conversation current: conversations) {
+			current.endRound();
+		}
+		lastActions.add("ROUND "+round++);
+		MainUI.updateActionList();
 		MainUIMapDisplay.repaintDisplay();
 		MainUI.paintGameControls();
 		MainUI.updateReactions();

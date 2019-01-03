@@ -1,9 +1,13 @@
-package Game.model.actions;
+package court.model.actions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import Game.model.Action;
+import com.google.gson.Gson;
+
 import Game.model.Game;
+import court.model.Action;
 import court.model.Court;
 import court.model.CourtCharacter;
 import view.model.Coordinate;
@@ -51,5 +55,30 @@ public class Move extends Action{
 	@Override
 	public String description() {
 		return "walked";
+	}
+
+	@Override
+	public boolean isConversationAction() {
+		return false;
+	}
+
+	public static String saveCode() {
+		return "move";
+	}
+	@Override
+	public String shortDescription() {
+		return "Move";
+	}
+
+	@Override
+	public String toSaveState() {
+		Gson gson = new Gson();
+		Map<String,Object> map = new HashMap<String,Object>();
+		
+		map.put("type", saveCode());
+		map.put("instigator", instigator);
+		map.put("direction", direction);
+		
+		return gson.toJson(map);
 	}
 }

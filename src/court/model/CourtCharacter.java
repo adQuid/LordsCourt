@@ -3,8 +3,8 @@ package court.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import Game.model.Action;
-import Game.model.actions.Greet;
+import court.model.actions.Greet;
+import court.model.actions.Wait;
 import view.GameEntity;
 import view.mainUI.MainUI;
 
@@ -71,7 +71,11 @@ public class CourtCharacter {
 		}
 		return characterName;
 	}
-		
+	
+	public int getID() {
+		return ID;
+	}
+	
 	public List<Action> getActionsThisTurn() {
 		return actionsThisTurn;
 	}
@@ -80,7 +84,7 @@ public class CourtCharacter {
 		this.actionsThisTurn = actionsThisTurn;
 	}
 	
-	public void addActionsThisTurn(Action toAdd) {
+	void addActionsThisTurn(Action toAdd) {
 		if(actionsThisTurn.size() == 0) {//for the time being, only one action per turn		
 			actionsThisTurn.add(toAdd);
 		}
@@ -95,8 +99,12 @@ public class CourtCharacter {
 	public List<Action> getActionsOnThis(Court court, CourtCharacter actor){
 		List<Action> retval = new ArrayList<Action>();
 		
-		if(!court.isTalkingTo(actor, this)) {
-			retval.add(new Greet(actor, this));
+		if(actor == this) {
+			retval.add(new Wait(actor));
+		} else {
+			if(!court.isTalkingTo(actor, this)) {
+				retval.add(new Greet(actor, this));
+			}
 		}
 		
 		return retval;
@@ -105,7 +113,7 @@ public class CourtCharacter {
 	public List<Subject> getGreetingSubjectsForThis(CourtCharacter greeter){
 		List<Subject> retval = new ArrayList<Subject>();
 		
-		retval.addAll(MainUI.game.getSetting().getConversationSubjects());
+		retval.addAll(MainUI.game.getSetting().getConversationSubjects().values());
 		
 		return retval;
 	}

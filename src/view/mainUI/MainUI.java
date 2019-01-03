@@ -21,13 +21,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import Game.model.Action;
 import Game.model.Game;
-import Game.model.actions.Move;
 import court.model.CourtCharacter;
+import court.model.Action;
 import court.model.Conversation;
 import court.model.Court;
 import court.model.TileClass;
+import court.model.actions.Move;
+import court.model.actions.Wait;
 import layout.TableLayout;
 import view.popups.TargetSelectPopup;
 import view.VerticalList;
@@ -43,7 +44,7 @@ public class MainUI {
 	static JPanel reactionPanel = new JPanel();
 	static JLabel reactionLabel = new JLabel();
 	static JPanel reactionListPanel = new JPanel();
-	static VerticalList reactionList = new VerticalList(reactionListPanel, getReactions(),4);
+	static VerticalList reactionList = new VerticalList(reactionListPanel, new ArrayList<Component>(),4);
 	
 	static JPanel oldActionPanel = new JPanel();
 	static VerticalList oldActionList = new VerticalList(oldActionPanel,lastActionLabels(),8);
@@ -136,15 +137,19 @@ public class MainUI {
 		    	  	}
 		    	  	if(e.getKeyCode() == KeyEvent.VK_UP) {
 		    	  		MainUIMapDisplay.focusY--;
+		    	  		MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyCode() == KeyEvent.VK_DOWN) {
 						MainUIMapDisplay.focusY++;
+						MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyCode() == KeyEvent.VK_LEFT) {
 						MainUIMapDisplay.focusX--;
+						MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
 						MainUIMapDisplay.focusX++;
+						MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyChar() == 'd') {
 						addActionForPlayer(new Move(playingAs,Move.RIGHT));
@@ -157,6 +162,9 @@ public class MainUI {
 					}
 					if(e.getKeyChar() == 'w') {
 						addActionForPlayer(new Move(playingAs,Move.UP));
+					}
+					if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+						addActionForPlayer(new Wait(playingAs));
 					}
 		        return false;
 		      }
@@ -247,17 +255,26 @@ public class MainUI {
 	
 	public static List<Component> getReactions() {
 		List<Component> retval =  new ArrayList<Component>();
+		List<Action> reactions = court.getReactions(playingAs);		
+
+		for(Action current: reactions) {
+			JButton toAdd = new JButton(current.shortDescription());
+			toAdd.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					court.appendActionForPlayer(current,playingAs);
+				}				
+			});
+			retval.add(toAdd);
+		}
 				
-		retval.add(new JButton("Test reaction"));
-		retval.add(new JButton("Test reaction"));
-		retval.add(new JButton("Test reaction"));
-		
 		return retval;
 	}
 	
 	public static JPanel generateMetaControls() {
 		JPanel metaControls = new JPanel();//for like save/load options. This needs a better name
-		metaControls.setLayout(new GridLayout(1,4));
+		metaControls.setLayout(new GridLayout(1,5));
 		metaControls.add(new JButton("Options"));
 		JButton saveButton = new JButton("Save Game");
 		saveButton.addActionListener(new ActionListener() {
@@ -268,6 +285,7 @@ public class MainUI {
 		});
 		metaControls.add(saveButton);
 		metaControls.add(new JButton("Placeholder"));
+		metaControls.add(new JButton("Placeholder2"));
 		metaControls.add(new JButton("Quit"));
 		
 		return metaControls;

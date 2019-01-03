@@ -1,9 +1,14 @@
 package court.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
-import Game.model.Action;
+import com.google.gson.Gson;
+
+import court.model.actions.ActionFactory;
 
 public class Conversation {
 
@@ -11,6 +16,7 @@ public class Conversation {
 	private List<CourtCharacter> people = new ArrayList<CourtCharacter>();
 	private Subject subject = null;
 	private Action lastAction;
+	private int lastActionAge = 999; 
 	
 	public Conversation(Action lastAction, CourtCharacter...characters) {
 		this.lastAction = lastAction;
@@ -25,11 +31,20 @@ public class Conversation {
 	}
 	
 	public Conversation(Court court, String saveState) {
-		String[] parts = saveState.split(",");
+		Gson gson = new Gson();
 		
-		for(String current: parts) {
-			people.add(court.getCharacterById(Integer.parseInt(current)));
-		}		
+		Map<String,Object> jsonObject = gson.fromJson(saveState, Map.class);
+
+		lastAction = ActionFactory.fromSaveState(court, gson.fromJson(jsonObject.get("action").toString(),Map.class));
+		lastActionAge = ((Double)jsonObject.get("actionAge")).intValue();
+		
+		if(jsonObject.get("subject") != null) {
+			subject = court.getSetting().getSubjectByName(jsonObject.get("subject").toString());
+		}
+					
+		for(Double current: (List<Double>)jsonObject.get("people")) {
+			people.add(court.getCharacterById(current.intValue()));
+		}
 	}
 	
 	public List<CourtCharacter> getPeople() {
@@ -52,21 +67,38 @@ public class Conversation {
 		return lastAction;
 	}
 	
-	public List<Action> getReactionsForCharacter(CourtCharacter character){
-		List<Action> retval = new ArrayList<Action>();
-		
-				
-		
-		return retval;
+	public void setLastAction(Action action) {
+		this.lastActionAge = 0;
+		this.lastAction = action;
+	}
+
+	public int getLastActionAge() {
+		return lastActionAge;
+	}
+	
+	public boolean wasActionTakenThisTurn() {
+		return lastActionAge == 0;
+	}
+
+	public void endRound() {
+		lastActionAge++;
 	}
 	
 	public String toSaveState() {
-		String retval = "";
-		
-		for(CourtCharacter current: people) {
-			retval+=current.ID+",";
+		Gson gson = new Gson();
+		Map<String,Object> map = new HashMap<String,Object>();
+
+		map.put("action", lastAction.toSaveState());
+		map.put("actionAge", lastActionAge);
+		if(subject != null) {
+			map.put("subject", subject.getName());
 		}
+		int[] peopleArr = new int[people.size()];
+		for(int i = 0; i < people.size(); i++) {
+			peopleArr[i] = people.get(i).getID();
+		}
+		map.put("people", peopleArr);
 		
-		return retval.substring(0, retval.length()-1);//trim last comma
+		return gson.toJson(map);
 	}
 }
