@@ -196,7 +196,11 @@ public class Court {
 	
 	public void addConversation(Conversation toAdd) {
 		
-		//behavior to remove characters from other conversations?
+		for(CourtCharacter character: toAdd.getPeople()) {
+			if(convoForCharacter(character) != null) {
+				convoForCharacter(character).removePerson(character);
+			}
+		}
 		
 		conversations.add(toAdd);
 	}
@@ -257,9 +261,14 @@ public class Court {
 				}
 			}
 		}
+		List<Conversation> newConvos = new ArrayList<Conversation>();
 		for(Conversation current: conversations) {
 			current.endRound();
+			if(current.getPeople().size() >= 2) {
+				newConvos.add(current);
+			}
 		}
+		conversations = newConvos;
 		
 		for(CourtCharacter current: characters) {
 			for(Action curAction: current.getActionsThisTurn()) {
@@ -274,6 +283,7 @@ public class Court {
 		lastActions.add("ROUND "+round++);
 
 		//This needs to move, I'm just not sure where
+		MainUI.defaultDescription();
 		MainUI.updateActionList();
 		MainUIMapDisplay.repaintDisplay();
 		MainUI.paintGameControls();

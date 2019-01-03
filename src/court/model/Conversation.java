@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 
-import court.conversationlogic.CharacterComparator;
+import court.conversationlogic.ConvoComparator;
 import court.model.actions.ActionFactory;
 
 public class Conversation {
@@ -19,7 +19,7 @@ public class Conversation {
 	private List<CourtCharacter> people = new ArrayList<CourtCharacter>();
 	private Subject subject = null;
 	private Action lastAction;
-	private int lastActionAge = 999; 
+	private int lastActionAge = -1; 
 	private int awkwardness = 0;
 	
 	public Conversation(Action lastAction, CourtCharacter...characters) {
@@ -60,6 +60,14 @@ public class Conversation {
 		this.people = people;
 	}
 	
+	public void addPerson(CourtCharacter character) {
+		people.add(character);
+	}
+	
+	public void removePerson(CourtCharacter character) {
+		people.remove(character);
+	}
+	
 	public Subject getSubject() {
 		return subject;
 	}
@@ -95,9 +103,12 @@ public class Conversation {
 	
 	public void endRound() {
 		lastActionAge++;
-		awkwardness += lastActionAge;
+		if(lastActionAge > 1) {
+			awkwardness++;
+		}
 		trimDistantPlayers();
-		Collections.sort(people, new CharacterComparator(this));
+		applyDots();
+		Collections.sort(people, new ConvoComparator(this));
 	}
 	
 	private void trimDistantPlayers() {
@@ -108,6 +119,12 @@ public class Conversation {
 			}
 		}
 		people = newPeople;
+	}
+	
+	private void applyDots() {
+		for(CourtCharacter current: people) {
+			current.addConfidence(-1 * awkwardness);
+		}
 	}
 	
 	public String toSaveState() {

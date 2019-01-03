@@ -10,6 +10,7 @@ import court.model.Conversation;
 import court.model.Court;
 import court.model.CourtCharacter;
 import court.model.Subject;
+import view.mainUI.MainUI;
 
 public class ChangeSubject extends Action{
 
@@ -30,8 +31,18 @@ public class ChangeSubject extends Action{
 		Conversation convo = game.convoForCharacter(instigator);
 		
 		if(convo.wasActionTakenThisTurn()) {
+			System.out.println(instigator.getCharacterName()+" was cut off at round "+game.getRound());
+			convo.addAwkwardness(2);
+			instigator.addConfidence(-1);
 			return;//somebody cut you off
 		}
+		
+		//penalties for changing to an unrelated subject
+		if(convo.getSubject() != null && !convo.getSubject().getRelatedSubjects().contains(newSubject)) {
+			convo.addAwkwardness(1);
+		}
+		
+		instigator.addAttention(4);
 		
 		convo.setSubject(newSubject);
 		convo.setLastAction(this);
@@ -52,7 +63,12 @@ public class ChangeSubject extends Action{
 	}
 	@Override
 	public String tooltip() {
-		return "Does stuff";
+		Conversation convo = MainUI.court.convoForCharacter(instigator);
+		if(convo.getSubject() == null || convo.getSubject().getRelatedSubjects().contains(newSubject)) {
+			return "Allows you to change to a different topic without being awkward";
+		} else {
+			return "Conversation changes to this topic, but adds one awkwardness because this subject isn't related to "+convo.getSubject().getName();
+		}
 	}
 	@Override
 	public String description() {

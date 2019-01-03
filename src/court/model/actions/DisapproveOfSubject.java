@@ -29,11 +29,27 @@ public class DisapproveOfSubject extends Action{
 	public void doAction(Court game) {
 		Conversation convo = game.convoForCharacter(instigator);
 		
+		//check if you were cut off this conversation
 		if(convo.wasActionTakenThisTurn()) {
 			System.out.println(instigator.getCharacterName()+" was cut off at round "+game.getRound());
 			convo.addAwkwardness(2);
 			instigator.addConfidence(-1);
-			return;//somebody cut you off
+			return;
+		}
+		
+		//changing the subject by disapproval can be awkward
+		if(convo.getSubject() == null || !convo.getSubject().equals(subject)) {
+			convo.addAwkwardness(1);
+		}
+		
+		instigator.addAttention(2);
+		if(convo.getSubject().equals(subject)) {
+			if(convo.getLastAction() instanceof DisapproveOfSubject) {
+				convo.getLastAction().getInstigator().addConfidence(1);
+			}
+			if(convo.getLastAction() instanceof ApproveOfSubject) {
+				instigator.addAttention(2);
+			}
 		}
 		
 		convo.setSubject(subject);
@@ -50,7 +66,7 @@ public class DisapproveOfSubject extends Action{
 	}
 	@Override
 	public String tooltip() {
-		return "Does stuff";
+		return "Gives one confidence to the last player to act if they also disapproved of this subject, grants you extra attention if they just approved";
 	}
 	@Override
 	public String description() {

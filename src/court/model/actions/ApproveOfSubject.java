@@ -28,18 +28,28 @@ public class ApproveOfSubject extends Action{
 	@Override
 	public void doAction(Court game) {
 		Conversation convo = game.convoForCharacter(instigator);
-		
+
+		//check to see if somebody cut you off
 		if(convo.wasActionTakenThisTurn()) {
 			System.out.println(instigator.getCharacterName()+" was cut off at round "+game.getRound());
 			convo.addAwkwardness(2);
 			instigator.addConfidence(-1);
-			return;//somebody cut you off
+			return;
 		}
 		
-		instigator.addAttention(4);
-		if(convo.getLastAction() instanceof ApproveOfSubject
-				&& ((ApproveOfSubject)convo.getLastAction()).subject.equals(subject)) {
-			convo.getLastAction().getInstigator().addConfidence(1);
+		//changing the subject by approval can be awkward
+		if(convo.getSubject() == null || !convo.getSubject().equals(subject)) {
+			convo.addAwkwardness(1);
+		}
+		
+		instigator.addAttention(2);
+		if(convo.getSubject().equals(subject)) {
+			if(convo.getLastAction() instanceof ApproveOfSubject) {
+				convo.getLastAction().getInstigator().addConfidence(1);
+			}
+			if(convo.getLastAction() instanceof DisapproveOfSubject) {
+				instigator.addAttention(2);
+			}
 		}
 		
 		convo.setSubject(subject);
@@ -56,7 +66,7 @@ public class ApproveOfSubject extends Action{
 	}
 	@Override
 	public String tooltip() {
-		return "Does stuff";
+		return "Gives one confidence to the last player to act if they also approved of this subject, grants you extra attention if they just disapproved";
 	}
 	@Override
 	public String description() {

@@ -56,7 +56,7 @@ public class MainUI {
 	static int visionDistance=12;
 	static MouseListener clickAction;
 	
-	static Court court;
+	public static Court court;
 	
 	public static Game game = null;
 	public static CourtCharacter playingAs = null;
@@ -134,6 +134,15 @@ public class MainUI {
 	
 	public static void changeDescription(String text) {
 		descriptionLabel.setText(text);
+	}
+	
+	public static void defaultDescription() {
+		Conversation convo = court.convoForCharacter(playingAs);
+		if(convo != null) {
+			descriptionLabel.setText("Conversing with "+convo.getPeople().size()+" people (awk "+convo.getAwkwardness()+" age "+convo.getLastActionAge()+")");
+			return;
+		}
+		descriptionLabel.setText("");		
 	}
 	
 	static int timesPaintControlsCalled=0;
@@ -237,12 +246,7 @@ public class MainUI {
 			for(String current: court.getActionMessages()) {
 				retval.add(new JLabel(current));
 			}
-		} else {
-			retval.add(new JLabel("test"));
-			retval.add(new JLabel("test"));
-			retval.add(new JLabel("test"));
-			retval.add(new JLabel("test"));
-		}
+		} 
 		
 		return retval;
 	}
@@ -279,6 +283,7 @@ public class MainUI {
 
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
+					defaultDescription();
 					court.appendActionForPlayer(current,playingAs);					
 				}
 
@@ -289,7 +294,7 @@ public class MainUI {
 
 				@Override
 				public void mouseExited(MouseEvent arg0) {
-					changeDescription("");
+					defaultDescription();
 				}
 
 				@Override
