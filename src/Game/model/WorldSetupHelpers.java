@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import court.model.Category;
+import court.model.Culture;
 import court.model.Subject;
 
 public class WorldSetupHelpers {
@@ -13,6 +14,7 @@ public class WorldSetupHelpers {
 	public static Setting generateSetting(String setting){
 		Map<String,Subject> subjects = new HashMap<String,Subject>();
 		List<Category> categories = new ArrayList<Category>();
+		Map<String,Culture> cultures = new HashMap<String,Culture>();
 		
 		Subject oats = new Subject("oats");
 		Subject barley = new Subject("barley");
@@ -24,9 +26,14 @@ public class WorldSetupHelpers {
 		
 		categories.add(groupSubjects("Grain",oats,barley));
 		
+		Culture basic = new Culture();
+		basic.addLike(oatmeal);
+		basic.addDislike(barley);
+		cultures.put("basic", basic);
+		
 		relateSubjects(oats,oatmeal);
 		
-		return new Setting(subjects, categories);
+		return new Setting(subjects, categories,cultures);
 	}
 
 	private static Category groupSubjects(String name, Subject...subjects) {

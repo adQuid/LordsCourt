@@ -40,16 +40,26 @@ public class ApproveOfSubject extends Action{
 		//changing the subject by approval can be awkward
 		if(convo.getSubject() == null || !convo.getSubject().equals(subject)) {
 			convo.addAwkwardness(1);
+			convo.setSubject(subject);
 		}
 		
 		instigator.addAttention(2);
+		instigator.addEnergy(-1);
+		
+		//confidence with concurring or disagreeing with last topic
 		if(convo.getSubject().equals(subject)) {
 			if(convo.getLastAction() instanceof ApproveOfSubject) {
 				convo.getLastAction().getInstigator().addConfidence(1);
 			}
 			if(convo.getLastAction() instanceof DisapproveOfSubject) {
 				instigator.addAttention(2);
+				convo.getLastAction().getInstigator().addConfidence(-1);
 			}
+		}
+		
+		//overall effects
+		for(CourtCharacter current: convo.getPeople()) {
+			current.addConfidence(current.likeModifier(subject));
 		}
 		
 		convo.setSubject(subject);

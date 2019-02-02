@@ -28,4 +28,7 @@ public class Tile {
 	public GameEntity toEntity() {
 		return new GameEntity(x,y,type.getImageName());
 	}
+	public boolean isWall() {
+		return type.isWall();
+	}
 }

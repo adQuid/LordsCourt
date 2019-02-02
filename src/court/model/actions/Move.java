@@ -31,21 +31,21 @@ public class Move extends Action{
 		Coordinate futurePosition = new Coordinate(instigator.getX(),instigator.getY());
 
 		if(direction == LEFT) {
-			futurePosition = new Coordinate(instigator.getX()-1,instigator.getY());
+			futurePosition = instigator.getCoord().left();
 		}
 		if(direction == RIGHT) {
-			futurePosition = new Coordinate(instigator.getX()+1,instigator.getY());
+			futurePosition = instigator.getCoord().right();
 		}
 		if(direction == DOWN) {
-			futurePosition = new Coordinate(instigator.getX(),instigator.getY()+1);
+			futurePosition = instigator.getCoord().down();
 		}
 		if(direction == UP) {
-			futurePosition = new Coordinate(instigator.getX(),instigator.getY()-1);
+			futurePosition = instigator.getCoord().up();;
 		}
 
 		List<CourtCharacter> charactersHere = court.getCharactersAt(futurePosition.x, futurePosition.y);
 		if(charactersHere.size() == 0) {
-			if(court.tileAt(futurePosition.x, futurePosition.y) != null) {
+			if(court.isPassible(futurePosition)) {
 				instigator.setX(futurePosition.x);
 				instigator.setY(futurePosition.y);
 			}
@@ -71,7 +71,7 @@ public class Move extends Action{
 	}
 	@Override
 	public String tooltip() {
-		return "Does stuff";
+		return "move in a direction";
 	}
 	@Override
 	public String toSaveState() {

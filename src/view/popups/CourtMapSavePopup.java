@@ -30,6 +30,7 @@ public class CourtMapSavePopup extends Popup implements Runnable{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				MainUI.saveActiveMap(nameField.getText());
+				GUI.setVisible(false);
 			}			
 		});
 				

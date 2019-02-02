@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import court.model.CourtCharacter;
 import court.model.Tile;
 import view.model.Coordinate;
+import view.model.Path;
 import view.GameEntity;
 
 public class MainUIMapDisplay {
@@ -22,8 +23,7 @@ public class MainUIMapDisplay {
 	static BufferedImage map;
 	static JLabel imageDisplay = new JLabel();
 	
-	static int focusX=0;
-	static int focusY=0;
+	static Coordinate focus = new Coordinate(0,0);
 	
 	public static void paintDisplay() {
 		displayPanel = new JPanel();
@@ -49,16 +49,54 @@ public class MainUIMapDisplay {
 		paintItBlack(map);
 		
 		for(Tile curTile: MainUI.court.getTiles()) {
-			paintGameEntity(curTile.toEntity());
+			if(canSeeTarget(new Coordinate(curTile.getX(),curTile.getY()))) {
+				paintGameEntity(curTile.toEntity());
+			}
 		}
 		for(CourtCharacter curChar: MainUI.court.getCharacters()) {
-			paintGameEntity(curChar.toEntity());
+			if(canSeeTarget(curChar.getCoord())) {
+				paintGameEntity(curChar.toEntity());
+			}
 		}
 		
 		imageDisplay.setIcon(new ImageIcon(map));
 		imageDisplay.repaint();
 	}
-	
+
+	private static boolean canSeeTarget(Coordinate coord) {
+		if(MainUI.editorMode) {
+			return true;
+		}
+		
+		Path los = MainUI.court.pathingBetween(MainUI.playingAs.getCoord(),new Coordinate(coord.x,coord.y));
+		
+		if(los == null) {
+			return false;
+		}
+		
+		//this needs improvement
+		int lastDirection = -1;
+		int duplicateDirection = -1;
+		for(int index = 1; index < los.steps.size(); index++) {
+			int thisDirection = Path.direction(los.steps.get(index), los.steps.get(index-1));
+			if(lastDirection != -1) {
+				if(duplicateDirection == -1) {			
+					if(thisDirection == lastDirection) {
+						duplicateDirection = thisDirection;
+					}
+				} else {
+					if(thisDirection != duplicateDirection) {
+						return false;
+					}
+				}
+			}
+			
+			
+			lastDirection = thisDirection;
+		}
+		return true;
+	}
+		
 	public static void resizeDisplay() {
 		map = new BufferedImage(getMapWidth(), getMapHeight(), BufferedImage.TYPE_INT_ARGB);
 		repaintDisplay();
@@ -103,11 +141,11 @@ public class MainUIMapDisplay {
 	}
 	
 	private static Coordinate mapToPixelCoord(int x, int y) {
-		return new Coordinate((x - focusX) * getMapHeight() / MainUI.visionDistance,(y - focusY) * getMapHeight() / MainUI.visionDistance);
+		return new Coordinate((x - focus.x) * getMapHeight() / MainUI.visionDistance,(y - focus.y) * getMapHeight() / MainUI.visionDistance);
 	}
 	
 	public static Coordinate pixelToMapCoord(int x, int y) {
-		return new Coordinate((x * MainUI.visionDistance / getMapHeight()) + focusX,(y * MainUI.visionDistance / getMapHeight()) + focusY);
+		return new Coordinate((x * MainUI.visionDistance / getMapHeight()) + focus.x,(y * MainUI.visionDistance / getMapHeight()) + focus.y);
 	}
 	
 	/**

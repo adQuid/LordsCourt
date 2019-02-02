@@ -15,8 +15,12 @@ import court.model.actions.ActionFactory;
 
 public class Conversation {
 
+	public static final int MAX_CONVO_RANGE = 6;
+	
 	//order matters here
 	private List<CourtCharacter> people = new ArrayList<CourtCharacter>();
+	//order doesn't matter here
+	private List<CourtCharacter> leavingPeople = new ArrayList<CourtCharacter>();
 	private Subject subject = null;
 	private Action lastAction;
 	private int lastActionAge = -1; 
@@ -65,7 +69,7 @@ public class Conversation {
 	}
 	
 	public void removePerson(CourtCharacter character) {
-		people.remove(character);
+		leavingPeople.add(character);
 	}
 	
 	public Subject getSubject() {
@@ -98,27 +102,35 @@ public class Conversation {
 	}
 	
 	public void addAwkwardness(int change) {
-		awkwardness+=change;
+		if(awkwardness + change > 0) {
+			awkwardness+=change;
+		} else {
+			awkwardness = 0;
+		}
 	}
 	
 	public void endRound() {
 		lastActionAge++;
 		if(lastActionAge > 1) {
-			awkwardness++;
+			addAwkwardness(1);
+		} else {
+			addAwkwardness(-1);
 		}
-		trimDistantPlayers();
+		trimPlayers();
 		applyDots();
 		Collections.sort(people, new ConvoComparator(this));
 	}
 	
-	private void trimDistantPlayers() {
+	private void trimPlayers() {
 		List<CourtCharacter> newPeople = new ArrayList<CourtCharacter>();
 		for(CourtCharacter current: people) {
-			if(current.distanceTo(lastAction.getInstigator()) <= 6) {
+			if(current.distanceTo(lastAction.getInstigator()) <= MAX_CONVO_RANGE 
+					&& !leavingPeople.contains(current)) {
 				newPeople.add(current);
 			}
 		}
 		people = newPeople;
+		leavingPeople.clear();
 	}
 	
 	private void applyDots() {

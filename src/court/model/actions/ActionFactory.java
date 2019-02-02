@@ -13,6 +13,9 @@ public class ActionFactory {
 	public static Action fromSaveState(Court court, Map<String,Object> jsonObject) {
 		String type = (String) jsonObject.get("type");
 		
+		if(type.equals(Wait.saveCode())) {
+			return new Wait(court, jsonObject);
+		}
 		if(type.equals(Greet.saveCode())) {
 			return new Greet(court, jsonObject);
 		}
@@ -24,6 +27,9 @@ public class ActionFactory {
 		}
 		if(type.equals(DisapproveOfSubject.saveCode())) {
 			return new DisapproveOfSubject(court, jsonObject);
+		}
+		if(type.equals(LeaveConversation.saveCode())) {
+			return new LeaveConversation(court, jsonObject);
 		}
 		
 		return null;

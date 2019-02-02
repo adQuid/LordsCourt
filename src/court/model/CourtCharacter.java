@@ -7,71 +7,85 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import Game.model.Setting;
+import court.model.actions.ApproveOfSubject;
+import court.model.actions.ChangeSubject;
+import court.model.actions.DisapproveOfSubject;
 import court.model.actions.Greet;
+import court.model.actions.LeaveConversation;
 import court.model.actions.Wait;
 import view.GameEntity;
 import view.mainUI.MainUI;
+import view.model.Coordinate;
 
 public class CourtCharacter {
 
 	int ID;
 	int location;
-	private int x;
-	private int y;
+	private Coordinate coordinate;
 	private String characterName;
 	private String imageName;
 	private int controller;
 	
 	private int attention = 0;
 	private int confidence = 0;
+	private int energy = 0;
+	
+	private Culture culture;
 	
 	private List<Action> actionsThisTurn = new ArrayList<Action>();
 	
-	public CourtCharacter(int ID, int location, int x, int y, String characterName, String imageName, int controller) {
+	public CourtCharacter(int ID, int location, Coordinate coord, String characterName, String imageName, int controller, Culture culture) {
 		this.ID = ID;
 		this.location = location;
-		this.x = x;
-		this.y = y;
+		this.coordinate = coord;
 		this.characterName = characterName;
 		this.imageName = imageName;
 		this.controller = controller;
+		this.culture = culture;
 	}
 	
-	public CourtCharacter(String saveState) {
+	public CourtCharacter(String saveState, Setting setting) {
 		Gson gson = new Gson();
 		
 		Map<String,Object> map = gson.fromJson(saveState, Map.class);
 		
 		this.ID = ((Double)map.get("ID")).intValue();
 		this.location = ((Double)map.get("location")).intValue();
-		this.x = ((Double)map.get("x")).intValue();
-		this.y = ((Double)map.get("y")).intValue();
+		this.coordinate = new Coordinate(((Double)map.get("x")).intValue(),((Double)map.get("y")).intValue());
 		this.characterName =map.get("name").toString();
 		this.imageName = map.get("img").toString();
 		this.controller = ((Double)map.get("control")).intValue();
 		
+		this.culture = setting.getCultures().get(map.get("culture").toString());
+		
 		this.attention = ((Double)map.get("attn")).intValue();
 		this.confidence = ((Double)map.get("conf")).intValue();
+		this.energy = ((Double)map.get("eng")).intValue();
 	}
 		
 	public int getController() {
 		return controller;
 	}
 	
+	public Coordinate getCoord() {
+		return coordinate;
+	}
+	
 	public int getX() {
-		return x;
+		return coordinate.x;
 	}
 
 	public void setX(int x) {
-		this.x = x;
+		this.coordinate.x = x;
 	}
 
 	public int getY() {
-		return y;
+		return coordinate.y;
 	}
 
 	public void setY(int y) {
-		this.y = y;
+		this.coordinate.y = y;
 	}
 
 	public String getCharacterName() {
@@ -88,6 +102,21 @@ public class CourtCharacter {
 	public int getID() {
 		return ID;
 	}
+	
+	/**
+	 * 
+	 * @param subject
+	 * @return -1 for dislike, 1 for like, 0 for neutral
+	 */
+	public int likeModifier(Subject subject) {
+		if(culture.likesSubject(subject)) {
+			return 1;
+		}
+		if(culture.dislikesSubject(subject)) {
+			return -1;
+		}
+		return 0;
+	}
 		
 	public int getAttention() {
 		return attention;
@@ -98,7 +127,11 @@ public class CourtCharacter {
 	}
 
 	public void addAttention(int change) {
-		this.attention += change;
+		if(change < 0 || energy > 0) {
+			this.attention += change;
+		} else {
+			this.attention += change/2;
+		}
 	}
 	
 	public int getConfidence() {
@@ -110,7 +143,25 @@ public class CourtCharacter {
 	}
 	
 	public void addConfidence(int change) {
-		this.confidence += change;
+		if(change < 0 || energy > 0) {
+			this.confidence += change;
+		}
+	}
+	
+	public int getEnergy() {
+		return energy;
+	}
+
+	public void setEnergy(int energy) {
+		this.energy = energy;
+	}
+	
+	public void addEnergy(int change) {
+		if(energy + change > 0) {
+			this.energy += change;
+		} else {
+			this.energy = 0;
+		}
 	}
 
 	public List<Action> getActionsThisTurn() {
@@ -142,14 +193,33 @@ public class CourtCharacter {
 		
 		if(actor == this) {
 			retval.add(new Wait(actor));
+		} else if(court.isTalkingTo(actor, this)) {
+			retval.add(new LeaveConversation(actor));
+			retval.addAll(universalConversationActions(court,actor));
+			for(Subject current: court.getSetting().getConversationSubjects().values()) {
+				if(court.convoForCharacter(actor).getSubject() != null) {
+					retval.add(new ChangeSubject(actor,current));
+				}
+			}
 		} else {
-			if(!court.isTalkingTo(actor, this)) {
+			if(actor.distanceTo(this) <= Conversation.MAX_CONVO_RANGE) {
 				retval.add(new Greet(actor, this));
 			}
 		}
 		
 		return retval;
 	}
+	
+	//should this be here?
+	public List<Action> universalConversationActions(Court court, CourtCharacter actor){
+		List<Action> retval = new ArrayList<Action>();
+		for(Subject current: court.getSetting().getConversationSubjects().values()) {
+			retval.add(new ApproveOfSubject(actor,current));
+			retval.add(new DisapproveOfSubject(actor,current));
+		}		
+		return retval;
+	}
+	
 	
 	public List<Subject> getGreetingSubjectsForThis(CourtCharacter greeter){
 		List<Subject> retval = new ArrayList<Subject>();
@@ -160,11 +230,11 @@ public class CourtCharacter {
 	}
 	
 	public int distanceTo(CourtCharacter other) {
-		return new Double(Math.ceil(Math.sqrt(Math.pow(x-other.x, 2) + Math.pow(y-other.y, 2)))).intValue();
+		return coordinate.distanceTo(other.coordinate);
 	}
 	
 	public GameEntity toEntity() {
-		return new GameEntity(x,y,"assets/"+imageName);
+		return new GameEntity(coordinate.x,coordinate.y,"assets/"+imageName);
 	}
 	
 	public String toSaveState() {
@@ -173,14 +243,17 @@ public class CourtCharacter {
 		
 		map.put("ID", ID);
 		map.put("location", location);
-		map.put("x", x);
-		map.put("y", y);
+		map.put("x", coordinate.x);
+		map.put("y", coordinate.y);
 		map.put("name", characterName);
 		map.put("img", imageName);
 		map.put("control", controller);
 		
+		map.put("culture", culture);
+		
 		map.put("attn", attention);
 		map.put("conf", confidence);
+		map.put("eng", energy);
 		
 		return gson.toJson(map);
 	}

@@ -43,6 +43,9 @@ public class Greet extends Action{
 			if(subject != null) {
 				newConvo.setSubject(subject);
 			}
+			instigator.addAttention(5);
+			instigator.addEnergy(-2);
+			
 			court.addConversation(newConvo);
 			court.addActionMessage(instigator.getShortDisplayName()+" greeted "+target.getShortDisplayName());
 		} else {
@@ -59,7 +62,7 @@ public class Greet extends Action{
 	}
 	@Override
 	public String tooltip() {
-		return "Does stuff";
+		return "Starts a conversation with the character, or includes character in existing conversation.";
 	}
 	public String description() {
 		String retval = instigator.getShortDisplayName()+" greeted "+target.getShortDisplayName();

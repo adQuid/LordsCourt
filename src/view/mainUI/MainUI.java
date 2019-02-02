@@ -12,6 +12,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import court.model.actions.Wait;
 import layout.TableLayout;
 import view.popups.TargetSelectPopup;
 import view.VerticalList;
+import view.model.Coordinate;
 
 public class MainUI {
 
@@ -42,6 +44,7 @@ public class MainUI {
 	static JPanel selfDetailsPanel = new JPanel();
 	static JLabel attentionLabel = new JLabel("Attention:");
 	static JLabel confidenceLabel = new JLabel("Confidence:");
+	static JLabel energyLabel = new JLabel("Energy:");
 	
 	static JPanel controlPanel;
 	
@@ -55,11 +58,13 @@ public class MainUI {
 	
 	static int visionDistance=12;
 	static MouseListener clickAction;
+	static MouseMotionListener hoverAction;
 	
 	public static Court court;
 	
 	public static Game game = null;
 	public static CourtCharacter playingAs = null;
+	public static boolean editorMode = false;
 	
 	static TileClass selectedClass = null;
 	
@@ -102,10 +107,12 @@ public class MainUI {
 		});
 				
 		MainUIMapDisplay.imageDisplay.addMouseListener(clickAction);
+		MainUIMapDisplay.imageDisplay.addMouseMotionListener(hoverAction);
 		
-		selfDetailsPanel.setLayout(new GridLayout(2,1));
+		selfDetailsPanel.setLayout(new GridLayout(3,1));
 		selfDetailsPanel.add(attentionLabel);
 		selfDetailsPanel.add(confidenceLabel);
+		selfDetailsPanel.add(energyLabel);
 		
 		double[][] size = {{0.25,0.75},{TableLayout.FILL}};
 		descriptionPanel.setLayout(new TableLayout(size));
@@ -127,9 +134,10 @@ public class MainUI {
 		court.saveMap(name);
 	}
 	
-	public static void updateSelfStats(int attention, int confidence) {
+	public static void updateSelfStats(int attention, int confidence, int energy) {
 		attentionLabel.setText("Attention: "+attention);
 		confidenceLabel.setText("Confidence: "+confidence);
+		energyLabel.setText("Energy: "+energy);
 	}
 	
 	public static void changeDescription(String text) {
@@ -161,19 +169,19 @@ public class MainUI {
 		    	  		return false;
 		    	  	}
 		    	  	if(e.getKeyCode() == KeyEvent.VK_UP) {
-		    	  		MainUIMapDisplay.focusY--;
+		    	  		MainUIMapDisplay.focus = MainUIMapDisplay.focus.up();
 		    	  		MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-						MainUIMapDisplay.focusY++;
+						MainUIMapDisplay.focus = MainUIMapDisplay.focus.down();
 						MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-						MainUIMapDisplay.focusX--;
+						MainUIMapDisplay.focus = MainUIMapDisplay.focus.left();
 						MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-						MainUIMapDisplay.focusX++;
+						MainUIMapDisplay.focus = MainUIMapDisplay.focus.right();
 						MainUIMapDisplay.repaintDisplay();
 					}
 					if(e.getKeyChar() == 'd') {
@@ -198,22 +206,38 @@ public class MainUI {
 		clickAction = new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				TargetSelectPopup.create(court, arg0.getX(), arg0.getY());
+				if(arg0.getButton() == MouseEvent.BUTTON3) {
+					TargetSelectPopup.create(court, arg0.getX(), arg0.getY());
+				}
 			}
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
 			}
-
 			@Override
 			public void mouseExited(MouseEvent arg0) {
 			}
-
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 			}
-
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
+			}			
+		};
+		
+		hoverAction = new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent arg0) {
+				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
+				if(!court.describeTile(coord.x, coord.y).equals("")) {
+					changeDescription(court.describeTile(coord.x, coord.y));
+				} else {
+					defaultDescription();
+				}
 			}			
 		};
 
@@ -268,6 +292,8 @@ public class MainUI {
 		
 		if(currentConvo != null && currentConvo.getLastAction() != null) {
 			reactionLabel.setText(currentConvo.getLastAction().description());
+		} else {
+			reactionLabel.setText("");
 		}
 		
 		reactionList.updatePanel(getReactions());

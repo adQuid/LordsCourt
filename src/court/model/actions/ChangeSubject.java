@@ -43,6 +43,7 @@ public class ChangeSubject extends Action{
 		}
 		
 		instigator.addAttention(4);
+		instigator.addEnergy(-1);
 		
 		convo.setSubject(newSubject);
 		convo.setLastAction(this);

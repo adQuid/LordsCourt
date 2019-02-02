@@ -37,10 +37,12 @@ public class TargetSelectPopup extends Popup{
 				
 				GUI.add(selectButton);
 			}
-
-			GUI.pack();
-			GUI.setVisible(true);
+		} else {
+			GUI.add(new JLabel("no actions here"));
 		}
+		
+		GUI.pack();
+		GUI.setVisible(true);
 	}
 	
 }

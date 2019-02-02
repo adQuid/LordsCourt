@@ -15,7 +15,7 @@ public class ConvoComparator implements Comparator<CourtCharacter>{
 	
 	@Override
 	public int compare(CourtCharacter character1, CourtCharacter character2) {
-		return character2.getConfidence() + character2.getAttention() 
-		- character1.getConfidence() - character1.getAttention();
+		return character2.getConfidence() + (3 * character2.getAttention()) 
+		- character1.getConfidence() - (3 * character1.getAttention());
 	}	
 }

@@ -9,40 +9,41 @@ import court.model.Action;
 import court.model.Court;
 import court.model.CourtCharacter;
 
-public class Wait extends Action{
+public class LeaveConversation extends Action{
 
-	public Wait(CourtCharacter character) {
+	public LeaveConversation(CourtCharacter character) {
 		super(character);
 	}
 	
-	public Wait(Court court, Map<String,Object> map) {
+	public LeaveConversation(Court court, Map<String,Object> map) {
 		super(court.getCharacterById(((Double)map.get("instigator")).intValue()));
 	}
-
+	
 	@Override
 	public void doAction(Court game) {
-		//Do nothing
+		game.convoForCharacter(instigator).removePerson(instigator);
+		game.addActionMessage(description());
 	}
 
 	public static String saveCode() {
-		return "wait";
+		return "leave";
 	}
 	@Override
 	public String shortDescription() {
-		return "Wait";
+		return "Leave Conversation";
 	}
 	
 	@Override
 	public String description() {
-		return instigator+" waited for somebody else to do something";
+		return instigator.getShortDisplayName()+" left the conversation";
 	}
 	@Override
 	public String tooltip() {
-		return "Allows other characters to act. It can be more polite to not just ramble on all day.";
+		return "Excuse yourself from this conversation politely.";
 	}
 	@Override
 	public boolean isConversationAction() {
-		return false;
+		return true;
 	}
 
 	@Override

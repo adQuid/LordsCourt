@@ -22,6 +22,7 @@ import view.model.Coordinate;
 public class MapEditorUISetup {
 
 	public static void paintMapEditorControls() {
+		MainUI.editorMode = true;
 		MainUI.controlPanel = new JPanel();
 		JPanel tileOptions = new JPanel();
 		JPanel saveOptions = new JPanel();
@@ -81,8 +82,8 @@ public class MapEditorUISetup {
 				if(MainUI.selectedClass == null) {
 					MainUI.court.removeTileAt(coord.x, coord.y);
 					MainUIMapDisplay.repaintDisplay();
-				}else if(MainUI.court.tileAt(coord.x, coord.y) == null) {
-					MainUI.court.addTile(new Tile(coord.x,coord.y,TileClass.roughWood));
+				}else{
+					MainUI.court.addTile(new Tile(coord.x,coord.y,MainUI.selectedClass));
 					MainUIMapDisplay.repaintDisplay();
 				}
 			}

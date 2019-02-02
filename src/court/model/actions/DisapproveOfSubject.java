@@ -43,13 +43,22 @@ public class DisapproveOfSubject extends Action{
 		}
 		
 		instigator.addAttention(2);
+		instigator.addEnergy(-1);
+		
+		//agreeing/disagreeing effects
 		if(convo.getSubject().equals(subject)) {
 			if(convo.getLastAction() instanceof DisapproveOfSubject) {
 				convo.getLastAction().getInstigator().addConfidence(1);
 			}
 			if(convo.getLastAction() instanceof ApproveOfSubject) {
 				instigator.addAttention(2);
+				convo.getLastAction().getInstigator().addConfidence(-1);
 			}
+		}
+		
+		//overall effects
+		for(CourtCharacter current: convo.getPeople()) {
+			current.addConfidence(-1*current.likeModifier(subject));
 		}
 		
 		convo.setSubject(subject);

@@ -15,6 +15,7 @@ import court.model.Subject;
 import court.ai.BrainThread;
 import court.model.Court;
 import court.model.Tile;
+import view.model.Coordinate;
 
 public class Game {
 
@@ -24,8 +25,8 @@ public class Game {
 	public Game() {
 		setting = WorldSetupHelpers.generateSetting("this don't matter yet");
 		activeCourts.add(new Court(1,setting,"test"));
-		activeCourts.get(0).getCharacters().add(new CourtCharacter(1,activeCourts.get(0).getID(),5,5,"sir Hastings","Reg.png",1));
-		activeCourts.get(0).getCharacters().add(new CourtCharacter(2,activeCourts.get(0).getID(),15,5,"Aaron","Nobleman.png",0));
+		activeCourts.get(0).getCharacters().add(new CourtCharacter(1,activeCourts.get(0).getID(),new Coordinate(5,5),"sir Hastings","Reg.png",1,setting.getCultures().get("basic")));
+		activeCourts.get(0).getCharacters().add(new CourtCharacter(2,activeCourts.get(0).getID(),new Coordinate(15,5),"Aaron","Nobleman.png",0,setting.getCultures().get("basic")));
 		startAI();
 	}	
 	
