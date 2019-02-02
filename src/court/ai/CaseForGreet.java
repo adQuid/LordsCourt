@@ -38,10 +38,13 @@ public class CaseForGreet implements CaseFactory{
 	}
 
 	private Case caseGivenTarget(Court game, CourtCharacter self, CourtCharacter target, double scale) {
-		if(self.distanceTo(target) > 6) {
-			return new Case(new Move(self,Move.LEFT), scale * (65.0 - (5*self.distanceTo(target))));
+		if(game.canSeeTarget(self.getCoord(), target.getCoord())) {
+			if(self.distanceTo(target) > 6) {
+				return new Case(new Move(self,Move.LEFT), scale * (65.0 - (5*self.distanceTo(target))));
+			}
+			return new Case(new Greet(self,target), scale * (65.0 - (5*self.distanceTo(target))));
 		}
-		return new Case(new Greet(self,target), scale * (65.0 - (5*self.distanceTo(target))));
+		return new Case(new Wait(self),-999);
 	}
 	
 }

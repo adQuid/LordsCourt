@@ -73,6 +73,7 @@ public class MainUI {
 		game = new Game("dagame");
 		court = game.getActiveCourts().get(0);
 		playingAs = court.getCharacters().get(0);
+		paintUniversalControls();
 		paintGameControls();
 		setupWindow();
 	}
@@ -83,6 +84,7 @@ public class MainUI {
 		} else {
 			court = providedCourt; 
 		}
+		paintUniversalControls();
 		MapEditorUISetup.paintMapEditorControls();
 		setupWindow();
 	}
@@ -153,14 +155,7 @@ public class MainUI {
 		descriptionLabel.setText("");		
 	}
 	
-	static int timesPaintControlsCalled=0;
-	
-	public static void paintGameControls() {
-		if(timesPaintControlsCalled++ > 0) {
-			updateActionList();
-			return;
-		}	
-		
+	public static void paintUniversalControls() {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager()
 		  .addKeyEventDispatcher(new KeyEventDispatcher() {
 		      @Override
@@ -184,6 +179,26 @@ public class MainUI {
 						MainUIMapDisplay.focus = MainUIMapDisplay.focus.right();
 						MainUIMapDisplay.repaintDisplay();
 					}
+		        return false;
+		      }
+		});
+	}
+	
+	static int timesPaintControlsCalled=0;
+		
+	public static void paintGameControls() {
+		if(timesPaintControlsCalled++ > 0) {
+			updateActionList();
+			return;
+		}	
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+		  .addKeyEventDispatcher(new KeyEventDispatcher() {
+		      @Override
+		      public boolean dispatchKeyEvent(KeyEvent e) {
+		    	  	if(e.getID() != KeyEvent.KEY_PRESSED) {
+		    	  		return false;
+		    	  	}
 					if(e.getKeyChar() == 'd') {
 						addActionForPlayer(new Move(playingAs,Move.RIGHT));
 					}

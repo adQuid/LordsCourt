@@ -49,52 +49,18 @@ public class MainUIMapDisplay {
 		paintItBlack(map);
 		
 		for(Tile curTile: MainUI.court.getTiles()) {
-			if(canSeeTarget(new Coordinate(curTile.getX(),curTile.getY()))) {
+			if(MainUI.editorMode || MainUI.court.canSeeTarget(MainUI.playingAs.getCoord(),new Coordinate(curTile.getX(),curTile.getY()))) {
 				paintGameEntity(curTile.toEntity());
 			}
 		}
 		for(CourtCharacter curChar: MainUI.court.getCharacters()) {
-			if(canSeeTarget(curChar.getCoord())) {
+			if(MainUI.editorMode || MainUI.court.canSeeTarget(MainUI.playingAs.getCoord(),curChar.getCoord())) {
 				paintGameEntity(curChar.toEntity());
 			}
 		}
 		
 		imageDisplay.setIcon(new ImageIcon(map));
 		imageDisplay.repaint();
-	}
-
-	private static boolean canSeeTarget(Coordinate coord) {
-		if(MainUI.editorMode) {
-			return true;
-		}
-		
-		Path los = MainUI.court.pathingBetween(MainUI.playingAs.getCoord(),new Coordinate(coord.x,coord.y));
-		
-		if(los == null) {
-			return false;
-		}
-		
-		//this needs improvement
-		int lastDirection = -1;
-		int duplicateDirection = -1;
-		for(int index = 1; index < los.steps.size(); index++) {
-			int thisDirection = Path.direction(los.steps.get(index), los.steps.get(index-1));
-			if(lastDirection != -1) {
-				if(duplicateDirection == -1) {			
-					if(thisDirection == lastDirection) {
-						duplicateDirection = thisDirection;
-					}
-				} else {
-					if(thisDirection != duplicateDirection) {
-						return false;
-					}
-				}
-			}
-			
-			
-			lastDirection = thisDirection;
-		}
-		return true;
 	}
 		
 	public static void resizeDisplay() {

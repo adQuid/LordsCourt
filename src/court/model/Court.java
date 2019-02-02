@@ -317,6 +317,36 @@ public class Court {
 		}
 	}
 
+	public boolean canSeeTarget(Coordinate start, Coordinate end) {		
+		Path los = pathingBetween(start,new Coordinate(end.x,end.y));
+		
+		if(los == null) {
+			return false;
+		}
+		
+		//this needs improvement
+		int lastDirection = -1;
+		int duplicateDirection = -1;
+		for(int index = 1; index < los.steps.size(); index++) {
+			int thisDirection = Path.direction(los.steps.get(index), los.steps.get(index-1));
+			if(lastDirection != -1) {
+				if(duplicateDirection == -1) {			
+					if(thisDirection == lastDirection) {
+						duplicateDirection = thisDirection;
+					}
+				} else {
+					if(thisDirection != duplicateDirection) {
+						return false;
+					}
+				}
+			}
+			
+			
+			lastDirection = thisDirection;
+		}
+		return true;
+	}
+	
 	public boolean isPassible(Coordinate coord) {
 		return tileAt(coord.x,coord.y) != null && !tileAt(coord.x,coord.y).isWall(); 
 	}

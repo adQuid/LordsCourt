@@ -78,14 +78,7 @@ public class MapEditorUISetup {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
-				if(MainUI.selectedClass == null) {
-					MainUI.court.removeTileAt(coord.x, coord.y);
-					MainUIMapDisplay.repaintDisplay();
-				}else{
-					MainUI.court.addTile(new Tile(coord.x,coord.y,MainUI.selectedClass));
-					MainUIMapDisplay.repaintDisplay();
-				}
+
 			}
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
@@ -97,6 +90,14 @@ public class MapEditorUISetup {
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
+				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
+				if(MainUI.selectedClass == null) {
+					MainUI.court.removeTileAt(coord.x, coord.y);
+					MainUIMapDisplay.repaintDisplay();
+				}else{
+					MainUI.court.addTile(new Tile(coord.x,coord.y,MainUI.selectedClass));
+					MainUIMapDisplay.repaintDisplay();
+				}
 			}
 
 			@Override

@@ -20,7 +20,7 @@ public class BasicAI {
 		List<Action> retval = new ArrayList<Action>();
 		List<Case> options = new ArrayList<Case>();
 		
-		options.add(new CaseForWait().caseForAction(court, character,5.00));
+		options.add(new CaseForWait().caseForAction(court, character,1.00));
 		options.add(new CaseForGreet().caseForAction(court, character,1.00));
 		options.add(new CaseForApproveCurrent().caseForAction(court, character,1.00));
 		options.add(new CaseForChangeToFavoriteTopic().caseForAction(court, character,1.00));
