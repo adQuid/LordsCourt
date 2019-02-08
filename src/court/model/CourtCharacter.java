@@ -249,7 +249,7 @@ public class CourtCharacter {
 		map.put("img", imageName);
 		map.put("control", controller);
 		
-		map.put("culture", culture);
+		map.put("culture", culture.getName());
 		
 		map.put("attn", attention);
 		map.put("conf", confidence);

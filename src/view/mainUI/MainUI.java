@@ -13,6 +13,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +36,7 @@ import court.model.actions.Move;
 import court.model.actions.Wait;
 import layout.TableLayout;
 import view.popups.TargetSelectPopup;
-import view.VerticalList;
+import view.LinearList;
 import view.model.Coordinate;
 
 public class MainUI {
@@ -46,15 +50,15 @@ public class MainUI {
 	static JLabel confidenceLabel = new JLabel("Confidence:");
 	static JLabel energyLabel = new JLabel("Energy:");
 	
-	static JPanel controlPanel;
+	static JPanel controlPanel = new JPanel();
 	
 	static JPanel reactionPanel = new JPanel();
 	static JLabel reactionLabel = new JLabel();
 	static JPanel reactionListPanel = new JPanel();
-	static VerticalList reactionList = new VerticalList(reactionListPanel, new ArrayList<Component>(),4);
+	static LinearList reactionList = new LinearList(reactionListPanel, new ArrayList<Component>(),4);
 	
 	static JPanel oldActionPanel = new JPanel();
-	static VerticalList oldActionList = new VerticalList(oldActionPanel,lastActionLabels(),8);
+	static LinearList oldActionList = new LinearList(oldActionPanel,lastActionLabels(),8);
 	
 	static int visionDistance=12;
 	static MouseListener clickAction;
@@ -87,6 +91,7 @@ public class MainUI {
 		paintUniversalControls();
 		MapEditorUISetup.paintMapEditorControls();
 		setupWindow();
+
 	}
 	
 	public static void setupWindow() {
@@ -122,16 +127,16 @@ public class MainUI {
 		descriptionPanel.add(descriptionLabel,"1,0");
 		
 		GUI.add(MainUIMapDisplay.displayPanel, BorderLayout.NORTH);
-		GUI.add(descriptionPanel, BorderLayout.CENTER);
-		GUI.add(controlPanel, BorderLayout.SOUTH);
+		if(editorMode) {
+			GUI.add(controlPanel, BorderLayout.CENTER);			
+		} else {
+			GUI.add(descriptionPanel, BorderLayout.CENTER);
+			GUI.add(controlPanel, BorderLayout.SOUTH);			
+		}
 		
 		GUI.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
-	
-	public static void recheck() {
-		GUI.validate();
-	}
-	
+		
 	public static void saveActiveMap(String name) {
 		court.saveMap(name);
 	}
@@ -255,8 +260,7 @@ public class MainUI {
 				}
 			}			
 		};
-
-		controlPanel = new JPanel();	
+		
 		controlPanel.setLayout(new BorderLayout());
 		
 		updateActionList();
@@ -359,8 +363,14 @@ public class MainUI {
 		JButton saveButton = new JButton("Save Game");
 		saveButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				game.saveState("dagame");
+			public void actionPerformed(ActionEvent arg0) {				
+				try {
+					BufferedWriter writer = new BufferedWriter(new FileWriter(new File("saves/dagame.savgam")));
+					writer.write(game.saveState());
+					writer.close();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}				
 			}			
 		});
 		metaControls.add(saveButton);

@@ -1,5 +1,6 @@
 package view.mainUI;
 
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -16,23 +19,27 @@ import javax.swing.JPanel;
 
 import court.model.Tile;
 import court.model.TileClass;
+import layout.TableLayout;
 import view.popups.CourtMapSavePopup;
+import view.LinearList;
 import view.model.Coordinate;
 
 public class MapEditorUISetup {
 
 	public static void paintMapEditorControls() {
 		MainUI.editorMode = true;
-		MainUI.controlPanel = new JPanel();
-		JPanel tileOptions = new JPanel();
+		
+		JPanel tileOptionPanel = new JPanel();
+		List<Component> tileOptionList = new ArrayList<Component>();
+		LinearList tileOptionVertList = new LinearList(tileOptionPanel,tileOptionList,6,true);
+		
 		JPanel saveOptions = new JPanel();
 		
-		MainUI.controlPanel.setLayout(new GridLayout(2,1));
-		MainUI.controlPanel.add(tileOptions);
-		MainUI.controlPanel.add(saveOptions);
-		
-		tileOptions.setLayout(new FlowLayout());
-		
+		double[][] size = {{TableLayout.FILL},{0.80,0.20}};
+		MainUI.controlPanel.setLayout(new TableLayout(size));
+		MainUI.controlPanel.add(tileOptionPanel,"0,0");
+		MainUI.controlPanel.add(saveOptions,"0,1");
+				
 		try {
 			JButton emptyButton = new JButton(new ImageIcon(ImageIO.read(new File("assets/black.png"))));
 			
@@ -43,7 +50,7 @@ public class MapEditorUISetup {
 				}					
 			});
 			
-			tileOptions.add(emptyButton);
+			tileOptionList.add(emptyButton);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -59,11 +66,12 @@ public class MapEditorUISetup {
 					}					
 				});
 				
-				tileOptions.add(toAdd);
+				tileOptionList.add(toAdd);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}		
+		tileOptionVertList.updatePanel();	
 		
 		JButton saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -78,28 +86,22 @@ public class MapEditorUISetup {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-
 			}
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
 			}
-
 			@Override
 			public void mouseExited(MouseEvent arg0) {
 			}
-
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
-				if(MainUI.selectedClass == null) {
-					MainUI.court.removeTileAt(coord.x, coord.y);
-					MainUIMapDisplay.repaintDisplay();
-				}else{
-					MainUI.court.addTile(new Tile(coord.x,coord.y,MainUI.selectedClass));
-					MainUIMapDisplay.repaintDisplay();
+				MainUI.court.removeTileAt(coord.x, coord.y);
+				if(MainUI.selectedClass != null) {
+					MainUI.court.addTile(new Tile(coord.x,coord.y,MainUI.selectedClass));	
 				}
+				MainUIMapDisplay.repaintDisplay();
 			}
-
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 			}			

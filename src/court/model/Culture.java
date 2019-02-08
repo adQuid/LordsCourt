@@ -5,11 +5,16 @@ import java.util.List;
 
 public class Culture {
 
+	private String name;
 	private List<Subject> likes = new ArrayList<Subject>();
 	private List<Subject> dislikes = new ArrayList<Subject>();
 	
-	public Culture() {
-		
+	public Culture(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public void addLike(Subject subject) {

@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.JPanel;
 
+import com.google.gson.Gson;
+
 import Game.model.Setting;
 import court.model.actions.ApproveOfSubject;
 import court.model.actions.ChangeSubject;
@@ -36,7 +38,7 @@ public class Court {
 	private int ID;
 	private Setting setting;
 	private String mapName = null;
-	private List<Tile> tiles;//this would be faster as a normal array, but a little tougher to code
+	private List<Tile> tiles = new ArrayList<Tile>();//this would be faster as a normal array, but a little tougher to code
 	private List<CourtCharacter> characters = new ArrayList<CourtCharacter>();
 	private List<Conversation> conversations = new ArrayList<Conversation>();
 	private List<String> lastActions = new ArrayList<String>();
@@ -48,66 +50,30 @@ public class Court {
 		tiles = new ArrayList<Tile>();
 		characters = new ArrayList<CourtCharacter>();
 	}
-	
-	public Court(int ID, Setting setting, String fileName) {
-		loadMap(ID,setting,fileName);
-	}
-	
+		
 	public Court(String saveState, Setting setting) {
+		Gson gson = new Gson();		
+		Map<String,Object> map = gson.fromJson(saveState, Map.class);
 		
-		String[] parts = saveState.split(Pattern.quote("[[STRTARR]]"));
+		this.ID = ((Double)map.get("ID")).intValue();
 		
-		String[] courtStats = parts[0].split(",");
-		loadMap(Integer.parseInt(courtStats[0]),setting,courtStats[1]);
-		
-		String[] arrays = parts[1].split(Pattern.quote("[[END CHARACTER]][[START CONVO]]"));
-
-		if(arrays.length > 1) {
-			arrays[0] = arrays[0].substring("[[START CHARACTER]]".length(), arrays[0].length());
-		} else {
-			arrays[0] = arrays[0].substring("[[START CHARACTER]]".length(), arrays[0].length()-"[[END CHARACTER]]".length());
+		for(String current: (List<String>)map.get("map")) {
+			tiles.add(new Tile(Integer.parseInt(current.split(",")[0]),
+					Integer.parseInt(current.split(",")[1]),
+					TileClass.getClassById(Integer.parseInt(current.split(",")[2]))));	
 		}
-		String[] characters = arrays[0].split(Pattern.quote("[[END CHARACTER]][[START CHARACTER]]"));
+		
+		List<String> characters = (List<String>) map.get("characters");
 		for(String current: characters) {
 			this.characters.add(new CourtCharacter(current, setting));
 		}
 		
-		if(arrays.length > 1) {
-			arrays[1] = arrays[1].substring(0, arrays[1].length()-"[[END CONVO]]".length());
-			String[] conversations = arrays[1].split(Pattern.quote("[[END CONVO]][[START CONVO]]"));
-			for(String current: conversations) {
-				this.conversations.add(new Conversation(this,current));
-			}
-		}
-		
-		
+		List<String> conversations = (List<String>) map.get("conversations");
+		for(String current: conversations) {
+			this.conversations.add(new Conversation(this,current));
+		}		
 	}
-	
-	private void loadMap(int ID, Setting setting, String fileName) {
-		this.ID = ID;
-		this.setting = setting;
-		tiles = new ArrayList<Tile>();
-		characters = new ArrayList<CourtCharacter>();
 		
-		this.mapName = fileName;
-		File mapFile = new File("maps/"+fileName+".cort");
-		
-		Scanner reader;
-		try {
-			reader = new Scanner(mapFile);
-
-			while(reader.hasNextLine()) {
-				String nextLine = reader.nextLine();
-				String[] splitLine = nextLine.split(",");
-				tiles.add(new Tile(Integer.parseInt(splitLine[0]),Integer.parseInt(splitLine[1]),
-						TileClass.getClassById(Integer.parseInt(splitLine[2]))));		
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	public int getID() {
 		return ID;
 	}
@@ -421,29 +387,36 @@ public class Court {
 	}
 	
 	public String saveState() {
-		String retval = "[[START COURT]]";
-		retval += getID()+","+getMapName()+"[[STRTARR]]";
+		Gson gson = new Gson();
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("ID", getID());
+		
+		List<String> mapStrings= new ArrayList<String>();
+		for(Tile curTile: tiles) {
+			mapStrings.add(curTile.getX()+","+curTile.getY()+","+curTile.getType().getID());
+		}
+		map.put("map", mapStrings);
+		
+		List<String> characterStrings = new ArrayList<String>();
 		for(CourtCharacter curChar: characters) {
-			retval+="[[START CHARACTER]]";
-			retval+=curChar.toSaveState();
-			retval+="[[END CHARACTER]]";
+			characterStrings.add(curChar.toSaveState());
 		}
+		map.put("characters", characterStrings);
+		
+		List<String> conversationStrings = new ArrayList<String>();
 		for(Conversation curCon: conversations) {
-			retval+="[[START CONVO]]";
-			retval+=curCon.toSaveState();
-			retval+="[[END CONVO]]";
+			conversationStrings.add(curCon.toSaveState());
 		}
-		retval+="[[END COURT]]";
-		return retval;
+		map.put("conversations", conversationStrings);
+		
+		return gson.toJson(map);
 	}
 	
 	public void saveMap(String name) {
 		this.mapName = name;
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(new File("maps/"+name+".cort")));
-			for(Tile curTile: tiles) {
-				writer.write(curTile.getX()+","+curTile.getY()+","+curTile.getType().getID()+"\n");
-			}
+			writer.write(saveState());
 			writer.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import view.mainUI.MainUI;
 
-public class VerticalList {
+public class LinearList {
 
 	private List<Component> components;
 	private int position = 0;
@@ -18,9 +18,17 @@ public class VerticalList {
 	private JPanel parentPanel;
 	private int size;
 	
-	public VerticalList(JPanel parentPanel, List<Component> components, int size) {
+	public LinearList(JPanel parentPanel, List<Component> components, int size) {
+		this(parentPanel, components, size, false);
+	}
+	
+	public LinearList(JPanel parentPanel, List<Component> components, int size, boolean horizontal) {
 		this.parentPanel = parentPanel;
-		parentPanel.setLayout(new GridLayout(size,1));
+		if(horizontal) {
+			parentPanel.setLayout(new GridLayout(1,size));
+		} else {
+			parentPanel.setLayout(new GridLayout(size,1));	
+		}
 		this.components = components;
 		this.size = size;
 	}
@@ -35,8 +43,6 @@ public class VerticalList {
 		
 		this.components = components;
 		
-		parentPanel.setLayout(new GridLayout(size,1));
-		
 		for(int index = position; index < position+size; index++) {
 			if(index<components.size()) {
 				parentPanel.add(components.get(index));
@@ -46,8 +52,7 @@ public class VerticalList {
 		}
 		
 		parentPanel.addMouseWheelListener(listener);
-		parentPanel.repaint();
-		MainUI.recheck();
+		parentPanel.validate();
 	}
 	
 	public void scroll(int scroll) {

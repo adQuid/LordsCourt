@@ -1,12 +1,16 @@
 package view.popups;
 
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import court.model.CourtCharacter;
 import court.model.Subject;
@@ -14,6 +18,7 @@ import court.model.actions.ApproveOfSubject;
 import court.model.actions.ChangeSubject;
 import court.model.actions.DisapproveOfSubject;
 import court.model.actions.Greet;
+import view.LinearList;
 import view.mainUI.MainUI;
 
 public class SubjectSelectPopup extends Popup{
@@ -26,10 +31,14 @@ public class SubjectSelectPopup extends Popup{
 	public static void create(CourtCharacter target, int x, int y, int type) {
 		JFrame GUI = setupGUI("Greeting",x,y);
 		
-		List<Subject> subjects = target.getGreetingSubjectsForThis(MainUI.playingAs);
+		Collection<Subject> subjects = MainUI.game.getSetting().getConversationSubjects().values();
+		JPanel panel = new JPanel();
+		List<Component> subjectButtons = new ArrayList<Component>();
+		LinearList subjectVertList = new LinearList(panel,subjectButtons,3);
+		
+		GUI.add(panel);
 		
 		if(type == GREET) {
-			GUI.setLayout(new GridLayout(subjects.size()+1,1));
 			
 			JButton basic = new JButton("No Topic");
 			basic.addActionListener(new ActionListener() {
@@ -39,9 +48,7 @@ public class SubjectSelectPopup extends Popup{
 					GUI.setVisible(false);
 				}			
 			});
-			GUI.add(basic);
-		} else {
-			GUI.setLayout(new GridLayout(subjects.size(),1));
+			subjectButtons.add(basic);
 		}		
 		
 		for(Subject current: subjects) {
@@ -66,9 +73,10 @@ public class SubjectSelectPopup extends Popup{
 					GUI.setVisible(false);
 				}				
 			});
-			GUI.add(toAdd);
+			subjectButtons.add(toAdd);
 		}
 		
+		subjectVertList.updatePanel();
 		GUI.pack();
 		GUI.setVisible(true);
 	}

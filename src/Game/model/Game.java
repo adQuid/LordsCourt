@@ -6,9 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import com.google.gson.Gson;
 
 import court.model.CourtCharacter;
 import court.model.Subject;
@@ -24,8 +28,14 @@ public class Game {
 	
 	public Game() {
 		setting = WorldSetupHelpers.generateSetting("this don't matter yet");
-		activeCourts.add(new Court(1,setting,"test"));
-		activeCourts.get(0).getCharacters().add(new CourtCharacter(1,activeCourts.get(0).getID(),new Coordinate(5,5),"sir Hastings","Reg.png",1,setting.getCultures().get("basic")));
+		// TODO fix all of this
+		try {
+			activeCourts.add(new Court(new Scanner(new File("maps/inn.cort")).nextLine(),setting));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		activeCourts.get(0).getCharacters().add(new CourtCharacter(1,activeCourts.get(0).getID(),new Coordinate(12,5),"sir Hastings","Reg.png",1,setting.getCultures().get("basic")));
 		activeCourts.get(0).getCharacters().add(new CourtCharacter(2,activeCourts.get(0).getID(),new Coordinate(15,5),"Aaron","Nobleman.png",0,setting.getCultures().get("basic")));
 		startAI();
 	}	
@@ -37,12 +47,12 @@ public class Game {
 		try {
 			saveState = (new Scanner(saveFile)).nextLine();//this SHOULD all be one line
 
+			Gson gson = new Gson();		
+			Map<String,Object> map = gson.fromJson(saveState, Map.class);
+
 			setting = WorldSetupHelpers.generateSetting("this don't matter yet");
 			
-			saveState = saveState.substring("[[START COURT]]".length(), saveState.length());
-			saveState = saveState.substring(0, saveState.length()-"[[END COURT]]".length());
-
-			String[] courts = saveState.split(Pattern.quote("[[END COURT]][[START COURT]]"));
+			List<String> courts = (List<String>)map.get("courts");
 
 			for(String current: courts) {
 				activeCourts.add(new Court(current,setting));
@@ -67,17 +77,17 @@ public class Game {
 		return activeCourts;
 	}
 		
-	public void saveState(String name) {
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(new File("saves/"+name+".savgam")));
-			for(Court curCourt: activeCourts) {
-				writer.write(curCourt.saveState());		
-			}
+	public String saveState() {
+			Gson gson = new Gson();
+			Map<String,Object> map = new HashMap<String,Object>();
 
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			List<String> courtStrings = new ArrayList<String>();
+			for(Court curCourt: activeCourts) {
+				courtStrings.add(curCourt.saveState());		
+			}
+			
+			map.put("courts", courtStrings);
+			
+			return gson.toJson(map);
 	}
 }

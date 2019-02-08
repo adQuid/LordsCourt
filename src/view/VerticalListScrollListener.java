@@ -7,9 +7,9 @@ import java.awt.event.MouseWheelListener;
 
 public class VerticalListScrollListener implements MouseWheelListener{
 
-	VerticalList parentList;
+	LinearList parentList;
 	
-	public VerticalListScrollListener(VerticalList parentList) {
+	public VerticalListScrollListener(LinearList parentList) {
 		this.parentList = parentList;
 	}
 	

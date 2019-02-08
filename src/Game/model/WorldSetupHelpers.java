@@ -26,7 +26,7 @@ public class WorldSetupHelpers {
 		
 		categories.add(groupSubjects("Grain",oats,barley));
 		
-		Culture basic = new Culture();
+		Culture basic = new Culture("basic");
 		basic.addLike(oatmeal);
 		basic.addDislike(barley);
 		cultures.put("basic", basic);
