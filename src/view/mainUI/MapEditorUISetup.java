@@ -31,7 +31,7 @@ public class MapEditorUISetup {
 		
 		JPanel tileOptionPanel = new JPanel();
 		List<Component> tileOptionList = new ArrayList<Component>();
-		LinearList tileOptionVertList = new LinearList(tileOptionPanel,tileOptionList,6,true);
+		LinearList tileOptionHorzList = new LinearList(tileOptionPanel,tileOptionList,6,true);
 		
 		JPanel saveOptions = new JPanel();
 		
@@ -71,7 +71,7 @@ public class MapEditorUISetup {
 				e.printStackTrace();
 			}
 		}		
-		tileOptionVertList.updatePanel();	
+		tileOptionHorzList.updatePanel();	
 		
 		JButton saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
