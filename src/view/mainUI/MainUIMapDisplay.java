@@ -48,15 +48,8 @@ public class MainUIMapDisplay {
 		
 		paintItBlack(map);
 		
-		for(Tile curTile: MainUI.court.getTiles()) {
-			if(MainUI.editorMode || MainUI.court.canSeeTarget(MainUI.playingAs.getCoord(),new Coordinate(curTile.getX(),curTile.getY()))) {
-				paintGameEntity(curTile.toEntity());
-			}
-		}
-		for(CourtCharacter curChar: MainUI.court.getCharacters()) {
-			if(MainUI.editorMode || MainUI.court.canSeeTarget(MainUI.playingAs.getCoord(),curChar.getCoord())) {
-				paintGameEntity(curChar.toEntity());
-			}
+		for(GameEntity current: MainUI.court.getGameEntities()) {
+			paintGameEntity(current);
 		}
 		
 		imageDisplay.setIcon(new ImageIcon(map));
