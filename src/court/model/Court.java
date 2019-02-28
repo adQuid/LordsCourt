@@ -209,6 +209,20 @@ public class Court {
 		objects.add(object);
 	}
 	
+	public void removeObjectsAt(int x, int y) {
+		boolean flag = false;
+		for(CourtObject current: objects) {
+			if(current.getX() == x && current.getY() == y) {
+				flag = true;
+				objects.remove(current);
+				break;
+			}
+		}
+		if(flag) {
+			removeObjectsAt(x,y);
+		}
+	}
+	
 	public Conversation convoForCharacter(CourtCharacter character) {
 		for(Conversation current: conversations) {
 			if(current.getPeople().contains(character)) {

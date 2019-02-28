@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import court.model.CourtObject;
 import court.model.CourtObjectClass;
 import court.model.Tile;
 import court.model.TileClass;
@@ -48,7 +49,6 @@ public class MapEditorUISetup {
 				
 		try {
 			JButton emptyButton = new JButton(new ImageIcon(ImageIO.read(new File("assets/black.png"))));
-
 			emptyButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -56,9 +56,7 @@ public class MapEditorUISetup {
 					MainUIMapDisplay.imageDisplay.addMouseListener(MainUI.clickAction);
 				}					
 			});
-
 			tileOptionList.add(emptyButton);
-
 
 			for(TileClass curClass: TileClass.allClasses) {
 				JButton toAdd = new JButton(new ImageIcon(ImageIO.read(new File(curClass.getImageName()))));
@@ -73,12 +71,23 @@ public class MapEditorUISetup {
 			}		
 			tileOptionHorzList.updatePanel();	
 
+			emptyButton = new JButton(new ImageIcon(ImageIO.read(new File("assets/black.png"))));
+			emptyButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					MainUI.clickAction = getPlaceObjectAction(null);
+					MainUIMapDisplay.imageDisplay.addMouseListener(MainUI.clickAction);
+				}					
+			});
+			objectOptionList.add(emptyButton);
+			
 			for(CourtObjectClass curClass: CourtObjectClass.allClasses) {
 				JButton toAdd = new JButton(new ImageIcon(ImageIO.read(new File(curClass.getImageName()))));
 				toAdd.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						System.out.println("TEST");
+						MainUI.clickAction = getPlaceObjectAction(curClass);
+						MainUIMapDisplay.imageDisplay.addMouseListener(MainUI.clickAction);
 					}					
 				});
 				objectOptionList.add(toAdd);
@@ -113,13 +122,40 @@ public class MapEditorUISetup {
 			}
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.out.println("test");
 				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
 				MainUI.court.removeTileAt(coord.x, coord.y);
 				if(type != null) {
 					MainUI.court.addTile(new Tile(coord.x,coord.y,type));	
 				} else {
 					MainUI.court.removeTileAt(coord.x,coord.y);
+				}
+				MainUIMapDisplay.repaintDisplay();
+			}
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}			
+		};
+	}
+
+	private static MouseListener getPlaceObjectAction(CourtObjectClass type) {
+		return new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+			}
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
+				if(type != null) {
+					MainUI.court.addObject(new CourtObject(coord.x,coord.y,type));	
+				} else {
+					MainUI.court.removeObjectsAt(coord.x, coord.y);
 				}
 				MainUIMapDisplay.repaintDisplay();
 			}
