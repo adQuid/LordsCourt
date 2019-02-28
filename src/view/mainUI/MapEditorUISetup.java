@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import court.model.CourtObjectClass;
 import court.model.Tile;
 import court.model.TileClass;
 import layout.TableLayout;
@@ -33,45 +34,60 @@ public class MapEditorUISetup {
 		List<Component> tileOptionList = new ArrayList<Component>();
 		LinearList tileOptionHorzList = new LinearList(tileOptionPanel,tileOptionList,6,true);
 		
+		JPanel objectOptionPanel = new JPanel();
+		List<Component> objectOptionList = new ArrayList<Component>();
+		LinearList objectOptionHorzList = new LinearList(objectOptionPanel,objectOptionList,6,true);
+		
 		JPanel saveOptions = new JPanel();
 		
-		double[][] size = {{TableLayout.FILL},{0.80,0.20}};
+		double[][] size = {{TableLayout.FILL},{0.4,0.4,0.2}};
 		MainUI.controlPanel.setLayout(new TableLayout(size));
 		MainUI.controlPanel.add(tileOptionPanel,"0,0");
-		MainUI.controlPanel.add(saveOptions,"0,1");
+		MainUI.controlPanel.add(objectOptionPanel,"0,1");
+		MainUI.controlPanel.add(saveOptions,"0,2");
 				
 		try {
 			JButton emptyButton = new JButton(new ImageIcon(ImageIO.read(new File("assets/black.png"))));
-			
+
 			emptyButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					MainUI.selectedClass = null;
+					MainUI.clickAction = getPlaceTileAction(null);
+					MainUIMapDisplay.imageDisplay.addMouseListener(MainUI.clickAction);
 				}					
 			});
-			
+
 			tileOptionList.add(emptyButton);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		
-		for(TileClass curClass: TileClass.allClasses) {
-			try {
+
+
+			for(TileClass curClass: TileClass.allClasses) {
 				JButton toAdd = new JButton(new ImageIcon(ImageIO.read(new File(curClass.getImageName()))));
-				
 				toAdd.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						MainUI.selectedClass = curClass;
+						MainUI.clickAction = getPlaceTileAction(curClass);
+						MainUIMapDisplay.imageDisplay.addMouseListener(MainUI.clickAction);
 					}					
 				});
-				
 				tileOptionList.add(toAdd);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}		
-		tileOptionHorzList.updatePanel();	
+			}		
+			tileOptionHorzList.updatePanel();	
+
+			for(CourtObjectClass curClass: CourtObjectClass.allClasses) {
+				JButton toAdd = new JButton(new ImageIcon(ImageIO.read(new File(curClass.getImageName()))));
+				toAdd.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						System.out.println("TEST");
+					}					
+				});
+				objectOptionList.add(toAdd);
+			}		
+			objectOptionHorzList.updatePanel();	
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		JButton saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -81,8 +97,10 @@ public class MapEditorUISetup {
 			}			
 		});
 		saveOptions.add(saveButton);
-		
-		MainUI.clickAction = new MouseListener() {
+	}
+	
+	private static MouseListener getPlaceTileAction(TileClass type) {
+		return new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -95,10 +113,13 @@ public class MapEditorUISetup {
 			}
 			@Override
 			public void mousePressed(MouseEvent arg0) {
+				System.out.println("test");
 				Coordinate coord = MainUIMapDisplay.pixelToMapCoord(arg0.getX(),arg0.getY());
 				MainUI.court.removeTileAt(coord.x, coord.y);
-				if(MainUI.selectedClass != null) {
-					MainUI.court.addTile(new Tile(coord.x,coord.y,MainUI.selectedClass));	
+				if(type != null) {
+					MainUI.court.addTile(new Tile(coord.x,coord.y,type));	
+				} else {
+					MainUI.court.removeTileAt(coord.x,coord.y);
 				}
 				MainUIMapDisplay.repaintDisplay();
 			}
@@ -107,5 +128,4 @@ public class MapEditorUISetup {
 			}			
 		};
 	}
-	
 }

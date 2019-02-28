@@ -2,33 +2,38 @@ package court.model;
 
 import view.GameEntity;
 
-public class Tile {
-
+public class CourtObject {
 	private int x;
 	private int y;
-	private TileClass type;
-	
-	public Tile(int x, int y, TileClass type) {
+	private CourtObjectClass type;
+		
+	public CourtObject(int x, int y, CourtObjectClass type) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.type = type;
 	}
-	public Tile(String string) {
+	public CourtObject(String string) {
 		this(Integer.parseInt(string.split(",")[0]),
 				Integer.parseInt(string.split(",")[1]),
-				TileClass.getClassById(Integer.parseInt(string.split(",")[2])));
+				CourtObjectClass.getClassById(Integer.parseInt(string.split(",")[2])));
 	}
 	public int getX() {
 		return x;
 	}
+	public void setX(int x) {
+		this.x = x;
+	}
 	public int getY() {
 		return y;
 	}
-	public TileClass getType() {
+	public void setY(int y) {
+		this.y = y;
+	}
+	public CourtObjectClass getType() {
 		return type;
 	}
-	public void setType(TileClass type) {
+	public void setType(CourtObjectClass type) {
 		this.type = type;
 	}
 	public GameEntity toEntity() {

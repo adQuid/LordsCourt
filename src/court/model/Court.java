@@ -28,6 +28,7 @@ import court.model.actions.Greet;
 import court.model.actions.LeaveConversation;
 import court.model.actions.Move;
 import court.model.actions.Wait;
+import view.GameEntity;
 import view.mainUI.MainUI;
 import view.mainUI.MainUIMapDisplay;
 import view.model.Coordinate;
@@ -39,6 +40,7 @@ public class Court {
 	private Setting setting;
 	private String mapName = null;
 	private List<Tile> tiles = new ArrayList<Tile>();//this would be faster as a normal array, but a little tougher to code
+	private List<CourtObject> objects = new ArrayList<CourtObject>();
 	private List<CourtCharacter> characters = new ArrayList<CourtCharacter>();
 	private List<Conversation> conversations = new ArrayList<Conversation>();
 	private List<String> lastActions = new ArrayList<String>();
@@ -47,7 +49,6 @@ public class Court {
 	//creates a new empty map for map editing
 	public Court(int ID) {
 		this.ID = ID;
-		tiles = new ArrayList<Tile>();
 		characters = new ArrayList<CourtCharacter>();
 	}
 		
@@ -58,9 +59,11 @@ public class Court {
 		this.ID = ((Double)map.get("ID")).intValue();
 		
 		for(String current: (List<String>)map.get("map")) {
-			tiles.add(new Tile(Integer.parseInt(current.split(",")[0]),
-					Integer.parseInt(current.split(",")[1]),
-					TileClass.getClassById(Integer.parseInt(current.split(",")[2]))));	
+			tiles.add(new Tile(current));	
+		}
+		
+		for(String current: (List<String>)map.get("objects")) {
+			objects.add(new CourtObject(current));
 		}
 		
 		List<String> characters = (List<String>) map.get("characters");
@@ -157,6 +160,24 @@ public class Court {
 		return tiles;
 	}
 	
+	public List<CourtObject> getObjects(){
+		return objects;
+	}
+	
+	public List<GameEntity> getGameEntities(){
+		List<GameEntity> retval = new ArrayList<GameEntity>();
+		for(Tile current: tiles) {
+			retval.add(current.toEntity());
+		}
+		for(CourtObject current: objects) {
+			retval.add(current.toEntity());
+		}
+		for(CourtCharacter current: characters) {
+			retval.add(current.toEntity());
+		}
+		return retval;
+	}
+	
 	public Tile tileAt(int x, int y) {
 		for(Tile curTile: tiles) {
 			if(curTile.getX() == x && curTile.getY() == y) {
@@ -166,12 +187,26 @@ public class Court {
 		return null;
 	}
 	
+	public List<CourtObject> objectsAt(int x, int y){
+		List<CourtObject> retval = new ArrayList<CourtObject>();
+		for(CourtObject current: objects) {
+			if(current.getX() == x && current.getY() == y) {
+				retval.add(current);
+			}
+		}
+		return retval;
+	}
+	
 	public void addTile(Tile toAdd) {
 		tiles.add(toAdd);
 	}
 	
 	public void removeTileAt(int x, int y) {
 		tiles.remove(tileAt(x,y));
+	}
+	
+	public void addObject(CourtObject object) {
+		objects.add(object);
 	}
 	
 	public Conversation convoForCharacter(CourtCharacter character) {
